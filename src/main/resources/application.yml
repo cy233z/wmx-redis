@@ -18,7 +18,7 @@ spring:
         max-wait: -1ms
 
 
-#演示用 @ConfigurationProperties 为 java bean 属性注入值
+#演示用 @ConfigurationProperties + @Component 为 java bean 属性注入值
 user:
   id: 1200
   lastName: 杨戬
@@ -34,3 +34,22 @@ user:
     id: 9527
     name: 哮天犬
     age: 100
+
+
+
+#演示用 @ConfigurationProperties + @Bean为 java bean 属性注入值
+person:
+  id: 1301
+  lastName: 二郎神
+  #  age: 110  #未配置时，对象属性会使用自己的默认值
+  birthday: 2018/07/11
+  colorList: #数组类型
+    - RED
+    - yellow
+    - GREEN
+  cityMap: {mapK1: 长沙,mapK2: 深圳}  #map类型
+  #对象类型
+  dog:
+    id: 9528
+    name: 哮天犬
+    age: 1088
