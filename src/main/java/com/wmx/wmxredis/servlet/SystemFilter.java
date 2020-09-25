@@ -12,7 +12,7 @@ import java.io.IOException;
  * filterName：表示过滤器名称，可以不写
  * value：配置请求过滤的规则，如 "/*" 表示过滤所有请求，包括静态资源，如 "/user/*" 表示 /user 开头的所有请求
  */
-@WebFilter(filterName = "SystemFilter", value = {"/*"})
+//@WebFilter(filterName = "SystemFilter", value = {"/*"})
 public class SystemFilter implements Filter {
 
     @Override
