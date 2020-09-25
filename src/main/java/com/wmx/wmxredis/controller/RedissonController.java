@@ -52,7 +52,7 @@ public class RedissonController {
     }
 
     /**
-     * 使用 Redisson 加锁 · 可重入锁
+     * RedissonClient.getLock(String name)：可重入锁
      * <p>
      * 支付：http://localhost:8080/redisson/payment2?orderNumber=885867878
      *
@@ -60,11 +60,11 @@ public class RedissonController {
      * @return
      */
     @GetMapping("redisson/payment2")
-    public String payment(@RequestParam Integer orderNumber) {
+    public String payment2(@RequestParam Integer orderNumber) {
         String result = "订单【" + orderNumber + "】支付成功!";
         logger.info("用户请求支付订单【" + orderNumber + "】");
 
-        String key = "com.wmx.wmxredis.controller.RedissonController.payment_" + orderNumber;
+        String key = "com.wmx.wmxredis.controller.RedissonController.payment2_" + orderNumber;
         /**
          * getLock(String name)：按名称返回锁实例，实现了一个非公平的可重入锁，因此不能保证线程获得顺序
          * lock():获取锁，如果锁不可用，则当前线程将处于休眠状态，直到获得锁为止
@@ -89,4 +89,57 @@ public class RedissonController {
         }
         return result;
     }
+
+    /**
+     * RedissonClient.getLock(String name)：可重入锁
+     * boolean tryLock(long waitTime, long leaseTime, TimeUnit unit)：尝试获取锁
+     * 1、waitTime：获取锁时的等待时间，超时自动放弃，线程不再继续阻塞，方法返回 false
+     * 2、leaseTime：获取到锁后，指定加锁的时间，超时后自动解锁
+     * 3、如果成功获取锁，则返回 true，否则返回 false。
+     * <p>
+     * http://localhost:8080/redisson/payment3?orderNumber=8856767
+     *
+     * @param orderNumber
+     * @return
+     */
+    @GetMapping("redisson/payment3")
+    public String payment3(@RequestParam Integer orderNumber) {
+        String result = "订单【" + orderNumber + "】支付成功.";
+        logger.info("用户请求支付订单【" + orderNumber + "】.");
+
+        String key = "com.wmx.wmxredis.controller.RedissonController.payment3_" + orderNumber;
+        /**
+         * getLock(String name)：按名称返回锁实例，实现了一个非公平的可重入锁，因此不能保证线程获得顺序
+         * lock():获取锁，如果锁不可用，则当前线程将处于休眠状态，直到获得锁为止
+         */
+        RLock lock = redissonClient.getLock(key);
+        boolean tryLock = false;
+        try {
+            tryLock = lock.tryLock(30, 180, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        if (!tryLock) {
+            return "订单【" + orderNumber + "】正在支付中，请耐心等待！";
+        }
+        try {
+            logger.info("查询支付状态");
+            TimeUnit.SECONDS.sleep(40);
+            logger.info("开始支付订单【" + orderNumber + "】");
+            TimeUnit.SECONDS.sleep(40);
+        } catch (Exception e) {
+            e.printStackTrace();
+            result = "订单【" + orderNumber + "】支付失败：" + e.getMessage();
+        } finally {
+            logger.info("结束支付订单【" + orderNumber + "】");
+            /**
+             * unlock()：释放锁， Lock 接口的实现类通常会对线程释放锁（通常只有锁的持有者才能释放锁）施加限制，
+             * 如果违反了限制，则可能会抛出（未检查的）异常。
+             */
+            lock.unlock();
+        }
+        return result;
+    }
+
+
 }
