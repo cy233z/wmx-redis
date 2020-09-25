@@ -21,7 +21,7 @@ public class PersonProperties {
     private List<String> colorList;
     private Map<String, String> cityMap;
     /**
-     * 关联的 Dog 对象可以不加 @ConfigurationProperties 也会自动注入
+     * 关联的 Dog 对象
      */
     private Dog dog;
 
