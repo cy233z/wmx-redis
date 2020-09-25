@@ -15,6 +15,21 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @EnableConfigurationProperties(StaffProperties.class)
 public class StaffConfig {
+    /**
+     * 可以参考官方的 KafkaAutoConfiguration 就知道，如果想在配置类中直接获取目标 java bean 属性配置类，
+     * 则直接通过构造器传入即可，通常用于为创建其他 bean 时提供属性配置。这里不再继续深入，实际中参考官网一目了然。
+     */
+    private final StaffProperties properties;
+
+    /**
+     * 应用启动的时候会自动执行本来，完成赋值。
+     *
+     * @param properties
+     */
+    public StaffConfig(StaffProperties properties) {
+        this.properties = properties;
+        System.out.println("properties=" + this.properties);
+    }
 
 
 }
