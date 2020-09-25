@@ -84,8 +84,11 @@ public class RedissonController {
             /**
              * unlock()：释放锁， Lock 接口的实现类通常会对线程释放锁（通常只有锁的持有者才能释放锁）施加限制，
              * 如果违反了限制，则可能会抛出（未检查的）异常。
+             * 注意：如果锁已经被释放了，重复释放时，会抛出异常.
              */
-            lock.unlock();
+            if (lock.isLocked()) {
+                lock.unlock();
+            }
         }
         return result;
     }
@@ -127,16 +130,20 @@ public class RedissonController {
             TimeUnit.SECONDS.sleep(40);
             logger.info("开始支付订单【" + orderNumber + "】");
             TimeUnit.SECONDS.sleep(40);
+            lock.unlock();
         } catch (Exception e) {
             e.printStackTrace();
             result = "订单【" + orderNumber + "】支付失败：" + e.getMessage();
         } finally {
             logger.info("结束支付订单【" + orderNumber + "】");
             /**
+             * boolean isLocked():检查锁是否被任何线程锁定，被锁定时返回 true，否则返回 false.
              * unlock()：释放锁， Lock 接口的实现类通常会对线程释放锁（通常只有锁的持有者才能释放锁）施加限制，
-             * 如果违反了限制，则可能会抛出（未检查的）异常。
+             * 如果违反了限制，则可能会抛出（未检查的）异常。如果锁已经被释放，重复释放时，会抛出异常。
              */
-            lock.unlock();
+            if (lock.isLocked()) {
+                lock.unlock();
+            }
         }
         return result;
     }
