@@ -22,7 +22,9 @@ public class PropertiesController {
     private UserProperties userProperties;
 
     /**
-     * http://localhost:8080/redisson/properties/getDefaultUser
+     * ConfigurationProperties + Component  取值演示
+     * <p>
+     * http://localhost:8080/properties/getDefaultUser
      *
      * @return
      */
