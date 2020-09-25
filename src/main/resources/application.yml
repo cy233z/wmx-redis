@@ -2,10 +2,10 @@ server:
   port: 8080
 
 
-#Redis 配置，以下除了 timeout 外全部为默认配置.
+#Redis 配置
 spring:
   redis:
-    host: localhost
+    host: 127.0.0.1
     port: 6379
     database: 2
     password:
