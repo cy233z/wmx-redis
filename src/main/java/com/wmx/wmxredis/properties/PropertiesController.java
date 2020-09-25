@@ -24,6 +24,9 @@ public class PropertiesController {
     @Resource
     private PersonProperties personProperties;
 
+    @Resource
+    private StaffProperties staffProperties;
+
     /**
      * ConfigurationProperties + Component  取值演示
      * <p>
@@ -46,6 +49,18 @@ public class PropertiesController {
     @GetMapping("properties/getDefaultPerson")
     public PersonProperties getDefaultPerson() {
         return personProperties;
+    }
+
+    /**
+     * ConfigurationProperties + EnableConfigurationProperties 取值演示
+     * <p>
+     * http://localhost:8080/properties/getDefaultStaff
+     *
+     * @return
+     */
+    @GetMapping("properties/getDefaultStaff")
+    public StaffProperties getDefaultStaff() {
+        return staffProperties;
     }
 
 }

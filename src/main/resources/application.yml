@@ -53,3 +53,20 @@ person:
     id: 9528
     name: 哮天犬
     age: 1088
+
+#演示用 @ConfigurationProperties + @EnableConfigurationProperties 为 java bean 属性注入值
+staff:
+  id: 2305
+  lastName: 二郎真君
+  #  age: 110  #未配置时，对象属性会使用自己的默认值
+  birthday: 1918/07/11
+  colorList: #数组类型
+    - RED
+    - YELLOW
+    - GREEN
+  cityMap: {mapK1: 长沙麓谷,mapK2: 深圳科技园}  #map类型
+  #对象类型
+  dog:
+    id: 952823
+    name: 哮天犬
+    age: 1088121
