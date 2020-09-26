@@ -130,7 +130,6 @@ public class RedissonController {
             TimeUnit.SECONDS.sleep(40);
             logger.info("开始支付订单【" + orderNumber + "】");
             TimeUnit.SECONDS.sleep(40);
-            lock.unlock();
         } catch (Exception e) {
             e.printStackTrace();
             result = "订单【" + orderNumber + "】支付失败：" + e.getMessage();
@@ -147,6 +146,4 @@ public class RedissonController {
         }
         return result;
     }
-
-
 }
