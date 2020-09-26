@@ -1,7 +1,6 @@
 server:
   port: 8080
 
-
 #Redis 配置
 spring:
   redis:
@@ -16,6 +15,12 @@ spring:
         max-idle: 8
         min-idle: 0
         max-wait: -1ms
+
+
+#自定义分布式 Redis 客户端 Redisson 配置
+redisson:
+  type: stand-alone  #redis服务器部署类型，stand-alone:单机部署、cluster：机器部署.
+  address: redis://127.0.0.1:6379 #redis服务器地址，单机时必须是redis://开头.
 
 
 #演示用 @ConfigurationProperties + @Component 为 java bean 属性注入值
