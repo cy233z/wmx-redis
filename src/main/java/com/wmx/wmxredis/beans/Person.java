@@ -14,6 +14,15 @@ public class Person {
     private String name;
     private Date birthday;
 
+    public Person() {
+    }
+
+    public Person(Integer id, String name, Date birthday) {
+        this.id = id;
+        this.name = name;
+        this.birthday = birthday;
+    }
+
     public Integer getId() {
         return id;
     }
