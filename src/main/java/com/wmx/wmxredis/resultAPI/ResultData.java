@@ -12,6 +12,7 @@ import java.io.Serializable;
  * 2、数据对象使用泛型，方便传输任意类型的数据
  */
 public class ResultData<T> implements Serializable {
+    private static final long serialVersionUID = 2260434901667977303L;
     /**
      * code：状态码
      * message：消息
