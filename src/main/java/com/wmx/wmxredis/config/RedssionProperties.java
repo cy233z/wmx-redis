@@ -7,8 +7,9 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
  * @author wangMaoXiong
- * 自定义 Redssion 配置属性，这些属性可以参考 {@link SingleServerConfig}、{@link BaseConfig}、{@link Config}
- * Redssion 官网配置方法：https://github.com/redisson/redisson/wiki/2.-%E9%85%8D%E7%BD%AE%E6%96%B9%E6%B3%95
+ * <p>
+ * 1、自定义 Redssion 配置属性，这些属性可以参考 {@link SingleServerConfig}、{@link BaseConfig}、{@link Config}，根据需要添加或者减少
+ * 2、Redssion 官网配置方法：https://github.com/redisson/redisson/wiki/2.-%E9%85%8D%E7%BD%AE%E6%96%B9%E6%B3%95
  */
 @ConfigurationProperties(prefix = "redisson")
 public class RedssionProperties {

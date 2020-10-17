@@ -3,7 +3,6 @@ package com.wmx.wmxredis.config;
 import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;
 import org.redisson.config.Config;
-import org.redisson.misc.RedissonPromise;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -11,6 +10,8 @@ import org.springframework.context.annotation.Configuration;
 
 /**
  * Redisson 配置类
+ * <p>
+ * 1、EnableConfigurationProperties：将 {@link RedssionProperties} 配置类交由 Spring 容器管理
  *
  * @author wangMaoXiong
  * @version 1.0
@@ -22,6 +23,11 @@ public class RedissonConfig {
 
     private final RedssionProperties redssionProperties;
 
+    /**
+     * 通过构造器从 Spring 容器中获取 {@link RedssionProperties}实例
+     *
+     * @param redssionProperties
+     */
     public RedissonConfig(RedssionProperties redssionProperties) {
         this.redssionProperties = redssionProperties;
     }
