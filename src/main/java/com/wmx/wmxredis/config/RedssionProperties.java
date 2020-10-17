@@ -12,6 +12,13 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  */
 @ConfigurationProperties(prefix = "redisson")
 public class RedssionProperties {
+
+    /**
+     * redis服务器部署类型。
+     * stand-alone:单机部署
+     * cluster：机器部署.
+     */
+    private String type = "stand-alone";
     /**
      * Redis 服务器地址
      */
@@ -40,6 +47,14 @@ public class RedssionProperties {
      * 连接到 Redis 服务器时超时时间（毫秒）
      */
     private int connectTimeout = 10000;
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
 
     public String getAddress() {
         return address;
