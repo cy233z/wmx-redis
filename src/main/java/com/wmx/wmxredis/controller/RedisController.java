@@ -70,9 +70,9 @@ public class RedisController {
         Person person = (Person) opsForValue.get(RedisController.class.getName() + "_string" + personId);
         List<Person> personList = opsForList.range(RedisController.class.getName() + "_list" + personId, 0, -1);
         Person person1 = (Person) opsForHash.get(RedisController.class.getName() + "_map", "person" + personId);
-        System.out.println("person=" + person);
-        System.out.println("personList=" + personList);
-        System.out.println("person1=" + person1);
+        System.out.println("person= " + person);
+        System.out.println("personList= " + personList);
+        System.out.println("person1= " + person1);
         return personList;
     }
 }
