@@ -1,11 +1,18 @@
 # wmx-redis
 
 #### 介绍
-redis 练习
+
+1、RedisTemplate 模板操作 redis 
+
+2、Redisson 分布式锁练习
+
+3、 @ConfigurationProperties、@EnableConfigurationProperties、@Bean、@Component 属性注入练习
+
+4、后端返回数据对象封装练习，ResultData、ResultCode
 
 #### 软件架构
-软件架构说明
 
+环境：Java JDK 1.8 + Spring boot 2.1.3 
 
 #### 安装教程
 
