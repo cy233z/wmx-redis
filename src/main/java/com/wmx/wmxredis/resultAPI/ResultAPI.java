@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author wangMaoXiong
@@ -25,8 +26,9 @@ public class ResultAPI {
      * @return
      */
     @GetMapping("api/findPersons")
-    public ResultData findPersons(@RequestParam int page, @RequestParam int size) {
+    public ResultData findPersons(@RequestParam int page, @RequestParam int size) throws InterruptedException {
         List<Person> personList = this.getData(page, size);
+        TimeUnit.SECONDS.sleep(3);
         ResultData resultData = new ResultData(ResultCode.SUCCESS, personList, 356, page, size);
         return resultData;
     }
