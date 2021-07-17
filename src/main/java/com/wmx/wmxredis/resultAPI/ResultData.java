@@ -26,10 +26,10 @@ public class ResultData<T> implements Serializable {
      */
     private Integer code;
     private String message;
-    private long total;
-    private long pageNum;
-    private long pageSize;
-    private long pages;
+    private int total;
+    private int pageNum;
+    private int pageSize;
+    private int pages;
     private T data;
 
     public ResultData() {
@@ -47,7 +47,7 @@ public class ResultData<T> implements Serializable {
         this.data = data;
     }
 
-    public ResultData(ResultCode resultCode, T data, long total, long pageNum, long pageSize) {
+    public ResultData(ResultCode resultCode, T data, int total, int pageNum, int pageSize) {
         this.code = resultCode.getCode();
         this.message = resultCode.getMessage();
         this.data = data;
@@ -72,7 +72,7 @@ public class ResultData<T> implements Serializable {
         this.data = data;
     }
 
-    public ResultData(Integer code, String message, T data, long total, long pageNum, long pageSize) {
+    public ResultData(Integer code, String message, T data, int total, int pageNum, int pageSize) {
         this.code = code;
         this.message = message;
         this.data = data;
@@ -108,36 +108,36 @@ public class ResultData<T> implements Serializable {
         this.data = data;
     }
 
-    public long getTotal() {
+    public int getTotal() {
         return total;
     }
 
-    public void setTotal(long total) {
+    public void setTotal(int total) {
         this.total = total;
     }
 
 
-    public long getPageNum() {
+    public int getPageNum() {
         return pageNum;
     }
 
-    public void setPageNum(long pageNum) {
+    public void setPageNum(int pageNum) {
         this.pageNum = pageNum;
     }
 
-    public long getPageSize() {
+    public int getPageSize() {
         return pageSize;
     }
 
-    public void setPageSize(long pageSize) {
+    public void setPageSize(int pageSize) {
         this.pageSize = pageSize;
     }
 
-    public long getPages() {
+    public int getPages() {
         return pages;
     }
 
-    public void setPages(long pages) {
+    public void setPages(int pages) {
         this.pages = pages;
     }
 }
