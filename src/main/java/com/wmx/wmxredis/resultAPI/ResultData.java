@@ -8,6 +8,7 @@ import java.io.Serializable;
  * @author wangmaoxiong
  * @version 1.0
  * @date 2020/9/30 16:29
+ *
  * <p>
  * 页面返回值对象，用于封装返回数据。
  * 1、ResultData 对象中的属性需要提供 setter、getter 方法，控制层的 @ResponseBody 注解会自动将 ResultData 对象转为 json 格式数据返回给页面

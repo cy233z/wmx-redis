@@ -19,7 +19,6 @@ import java.util.List;
 @RestController
 public class ResultAPI {
 
-
     /**
      * http://localhost:8080/api/findPersons?page=5&size=20
      *
