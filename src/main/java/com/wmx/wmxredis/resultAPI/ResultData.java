@@ -3,6 +3,8 @@ package com.wmx.wmxredis.resultAPI;
 import java.io.Serializable;
 
 /**
+ * Java 设计 API 接口，实现统一格式返回数据
+ *
  * @author wangmaoxiong
  * @version 1.0
  * @date 2020/9/30 16:29
@@ -16,15 +18,17 @@ public class ResultData<T> implements Serializable {
     /**
      * code：状态码
      * message：消息
-     * total：分页时，表示数据总数
-     * page：分页时，表示当前的页码
-     * size：分页时，表示每页显示的数据条数
+     * total：分页时，表示所有页加起来的数据总数
+     * pageNum：分页时，表示当前的页码
+     * pageSize：分页时，表示每页显示的数据条数
+     * pages：总页数
      */
     private Integer code;
     private String message;
-    private Integer total;
-    private Integer page;
-    private Integer size;
+    private long total;
+    private long pageNum;
+    private long pageSize;
+    private long pages;
     private T data;
 
     public ResultData() {
@@ -42,13 +46,16 @@ public class ResultData<T> implements Serializable {
         this.data = data;
     }
 
-    public ResultData(ResultCode resultCode, T data, Integer total, Integer page, Integer size) {
+    public ResultData(ResultCode resultCode, T data, long total, long pageNum, long pageSize) {
         this.code = resultCode.getCode();
         this.message = resultCode.getMessage();
         this.data = data;
         this.total = total;
-        this.page = page;
-        this.size = size;
+        this.pageNum = pageNum;
+        this.pageSize = pageSize;
+        if (pageSize > 0) {
+            this.pages = (total % pageSize > 0) ? (total / pageSize + 1) : total / pageSize;
+        }
     }
 
     /**
@@ -64,13 +71,16 @@ public class ResultData<T> implements Serializable {
         this.data = data;
     }
 
-    public ResultData(Integer code, String message, T data, Integer total, Integer page, Integer size) {
+    public ResultData(Integer code, String message, T data, long total, long pageNum, long pageSize) {
         this.code = code;
         this.message = message;
         this.data = data;
         this.total = total;
-        this.page = page;
-        this.size = size;
+        this.pageNum = pageNum;
+        this.pageSize = pageSize;
+        if (pageSize > 0) {
+            this.pages = (total % pageSize > 0) ? (total / pageSize + 1) : total / pageSize;
+        }
     }
 
     public Integer getCode() {
@@ -97,27 +107,36 @@ public class ResultData<T> implements Serializable {
         this.data = data;
     }
 
-    public Integer getTotal() {
+    public long getTotal() {
         return total;
     }
 
-    public void setTotal(Integer total) {
+    public void setTotal(long total) {
         this.total = total;
     }
 
-    public Integer getPage() {
-        return page;
+
+    public long getPageNum() {
+        return pageNum;
     }
 
-    public void setPage(Integer page) {
-        this.page = page;
+    public void setPageNum(long pageNum) {
+        this.pageNum = pageNum;
     }
 
-    public Integer getSize() {
-        return size;
+    public long getPageSize() {
+        return pageSize;
     }
 
-    public void setSize(Integer size) {
-        this.size = size;
+    public void setPageSize(long pageSize) {
+        this.pageSize = pageSize;
+    }
+
+    public long getPages() {
+        return pages;
+    }
+
+    public void setPages(long pages) {
+        this.pages = pages;
     }
 }

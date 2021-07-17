@@ -10,12 +10,27 @@ import java.util.Date;
 import java.util.List;
 
 /**
+ * Java 设计 API 接口，实现统一格式返回数据
+ *
  * @author wangMaoXiong
  * @version 1.0
  * @date 2020/9/30 16:49
  */
 @RestController
 public class ResultAPI {
+
+
+    /**
+     * http://localhost:8080/api/findPersons?page=5&size=20
+     *
+     * @return
+     */
+    @GetMapping("api/findPerson")
+    public ResultData findPersons() {
+        List<Person> personList = this.getData(1, 5);
+        ResultData resultData = new ResultData(ResultCode.SUCCESS, personList.get(0));
+        return resultData;
+    }
 
     /**
      * http://localhost:8080/api/findPersons?page=5&size=20
@@ -27,7 +42,7 @@ public class ResultAPI {
     @GetMapping("api/findPersons")
     public ResultData findPersons(@RequestParam int page, @RequestParam int size) {
         List<Person> personList = this.getData(page, size);
-        ResultData resultData = new ResultData(ResultCode.SUCCESS, personList, 356, page, size);
+        ResultData resultData = new ResultData(ResultCode.SUCCESS, personList, 10000000, page, size);
         return resultData;
     }
 
@@ -41,7 +56,6 @@ public class ResultAPI {
     private List<Person> getData(int page, int size) {
         int start = (page - 1) * size + 1;
         int end = page * size;
-        end = end > 365 ? 365 : end;
 
         List<Person> personList = new ArrayList<>(4);
         for (int i = start; i <= end; i++) {
