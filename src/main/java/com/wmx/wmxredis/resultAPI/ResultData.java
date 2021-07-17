@@ -26,7 +26,7 @@ public class ResultData<T> implements Serializable {
      */
     private Integer code;
     private String message;
-    private int total;
+    private long total;
     private int pageNum;
     private int pageSize;
     private int pages;
@@ -47,7 +47,7 @@ public class ResultData<T> implements Serializable {
         this.data = data;
     }
 
-    public ResultData(ResultCode resultCode, T data, int total, int pageNum, int pageSize) {
+    public ResultData(ResultCode resultCode, T data, long total, int pageNum, int pageSize) {
         this.code = resultCode.getCode();
         this.message = resultCode.getMessage();
         this.data = data;
@@ -55,7 +55,9 @@ public class ResultData<T> implements Serializable {
         this.pageNum = pageNum;
         this.pageSize = pageSize;
         if (pageSize > 0) {
-            this.pages = (total % pageSize > 0) ? (total / pageSize + 1) : total / pageSize;
+            long l1 = Long.parseLong(pageSize + "");
+            long l2 = (total % l1 > 0) ? (total / l1 + 1) : total / l1;
+            this.pages = Integer.parseInt(l2 + "");
         }
     }
 
@@ -72,7 +74,7 @@ public class ResultData<T> implements Serializable {
         this.data = data;
     }
 
-    public ResultData(Integer code, String message, T data, int total, int pageNum, int pageSize) {
+    public ResultData(Integer code, String message, T data, long total, int pageNum, int pageSize) {
         this.code = code;
         this.message = message;
         this.data = data;
@@ -80,7 +82,9 @@ public class ResultData<T> implements Serializable {
         this.pageNum = pageNum;
         this.pageSize = pageSize;
         if (pageSize > 0) {
-            this.pages = (total % pageSize > 0) ? (total / pageSize + 1) : total / pageSize;
+            long l1 = Long.parseLong(pageSize + "");
+            long l2 = (total % l1 > 0) ? (total / l1 + 1) : total / l1;
+            this.pages = Integer.parseInt(l2 + "");
         }
     }
 
@@ -108,11 +112,11 @@ public class ResultData<T> implements Serializable {
         this.data = data;
     }
 
-    public int getTotal() {
+    public long getTotal() {
         return total;
     }
 
-    public void setTotal(int total) {
+    public void setTotal(long total) {
         this.total = total;
     }
 

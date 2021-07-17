@@ -20,7 +20,7 @@ import java.util.List;
 public class ResultAPI {
 
     /**
-     * http://localhost:8080/api/findPersons?page=5&size=20
+     * http://localhost:8080/api/findPerson
      *
      * @return
      */
