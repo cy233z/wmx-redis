@@ -3,6 +3,7 @@ package com.wmx.wmxredis;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.redis.connection.DataType;
 import org.springframework.data.redis.core.*;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -252,5 +253,20 @@ public class RedisTest {
         Long zset2 = opsForZSet.removeRangeByScore("zset2", 2.0, 3.0);
         System.out.println(opsForZSet.range("zset2", 0, -1));
     }
+
+    /**
+     * DataType type(K key)：查看缓存中 key 的类型，DataType 是一个枚举，有如下 code(name) 值：
+     * NONE("none"), STRING("string"), LIST("list"), SET("set"), ZSET("zset"), HASH("hash");
+     */
+    @Test
+    public void test() {
+        DataType dataType1 = redisTemplate.type("jcxxk2");
+        DataType dataType2 = redisTemplate.type("element-server.430000000.elementValueWhere.Sex");
+
+        System.out.println("dataType=========" + dataType1);//dataType=========STRING
+        System.out.println("dataType=========" + dataType2);//dataType=========HASH
+        System.out.println("code-name====" + dataType1.code() + "," + dataType1.name());//code-name====string,STRING
+    }
+
 
 }

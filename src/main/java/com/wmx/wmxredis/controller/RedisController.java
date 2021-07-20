@@ -1,13 +1,20 @@
 package com.wmx.wmxredis.controller;
 
+import com.google.common.base.Stopwatch;
 import com.wmx.wmxredis.beans.Person;
+import com.wmx.wmxredis.resultAPI.ResultCode;
+import com.wmx.wmxredis.resultAPI.ResultData;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.tomcat.util.ExceptionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.data.redis.connection.DataType;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.ListOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.util.ObjectUtils;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.Date;
@@ -20,7 +27,10 @@ import java.util.concurrent.TimeUnit;
  * @author wangMaoXiong
  */
 @RestController
+@SuppressWarnings("all")
 public class RedisController {
+
+    private static final Logger log = LoggerFactory.getLogger(RedisController.class);
     /**
      * 从容器中获取 RedisTemplate 实例
      */
@@ -74,6 +84,53 @@ public class RedisController {
         System.out.println("personList= " + personList);
         System.out.println("person1= " + person1);
         return personList;
+    }
+
+    /**
+     * 根据缓存的 key 查询缓存的值，用于查看缓存的值是否正确,因为 key 含有特殊字符 # ，所以采用 POST 请求.
+     * http://localhost:8080/redis/getValueByKey
+     *
+     * @param key
+     * @return
+     */
+    @RequestMapping(value = "/redis/getValueByKey", method = RequestMethod.POST)
+    public ResultData getValueByKey(@RequestBody String key) {
+        Stopwatch stopwatch = null;
+        try {
+            stopwatch = Stopwatch.createStarted();//秒表
+            log.info("根据 key 查询 redis 缓存值， kye={}", key);
+            if (ObjectUtils.isEmpty(key)) {
+                return new ResultData<Object>(ResultCode.FAIL, "kye 参数错误！");
+            }
+            boolean hasKey = redisTemplate.hasKey(key);
+            if (!hasKey) {
+                return new ResultData<Object>(ResultCode.FAIL, "kye 不存在：" + key);
+            }
+            DataType dataType = redisTemplate.type(key);
+            Object value = null;
+            if (StringUtils.equalsAnyIgnoreCase("string", dataType.name())) {
+                value = redisTemplate.opsForValue().get(key);
+            } else if (StringUtils.equalsAnyIgnoreCase("list", dataType.name())) {
+                value = redisTemplate.opsForList().range(key, 0, -1);
+            } else if (StringUtils.equalsAnyIgnoreCase("set", dataType.name())) {
+                value = redisTemplate.opsForSet().members(key);
+            } else if (StringUtils.equalsAnyIgnoreCase("zset", dataType.name())) {
+                value = redisTemplate.opsForZSet().range(key, 0, -1);
+            } else if (StringUtils.equalsAnyIgnoreCase("hash", dataType.name())) {
+                value = redisTemplate.opsForHash().entries(key);
+            } else {
+                return new ResultData<Object>(ResultCode.FAIL, "kye 的类型错误：" + key);
+            }
+            long elapsed = stopwatch.stop().elapsed(TimeUnit.MILLISECONDS);
+            return new ResultData<Object>(ResultCode.SUCCESS.getCode(), "查询成功！,耗时：" + elapsed + "(毫秒)", value);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            return new ResultData<Object>(ResultCode.FAIL, e.getMessage());
+        } finally {
+            if (stopwatch != null && stopwatch.isRunning()) {
+                stopwatch.stop();
+            }
+        }
     }
 }
 
