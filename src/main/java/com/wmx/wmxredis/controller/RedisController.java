@@ -89,6 +89,10 @@ public class RedisController {
     /**
      * 根据缓存的 key 查询缓存的值，用于查看缓存的值是否正确,因为 key 含有特殊字符 # ，所以采用 POST 请求.
      * http://localhost:8080/redis/getValueByKey
+     * <p>
+     * 1、DataType type(K key)：查询缓存 key 的类型，DataType 是一个枚举，code(name) 可选值如下：
+     * 2、NONE("none"), STRING("string"), LIST("list"), SET("set"), ZSET("zset"), HASH("hash");
+     * 3、none 表示 key 不存在，或者类型不确定
      *
      * @param key
      * @return
