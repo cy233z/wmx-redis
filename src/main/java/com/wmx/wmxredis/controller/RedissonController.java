@@ -52,7 +52,8 @@ public class RedissonController {
     }
 
     /**
-     * RedissonClient.getLock(String name)：可重入锁
+     * RedissonClient.getLock(String name)：可重入锁,按名称返回锁实例，实现了一个非公平的可重入锁，因此不能保证线程获得顺序
+     * lock(): 获取锁，如果锁不可用，则当前线程将处于休眠状态，直到获得锁为止
      * <p>
      * 支付：http://localhost:8080/redisson/payment2?orderNumber=885867878
      *
@@ -65,10 +66,6 @@ public class RedissonController {
         logger.info("用户请求支付订单【" + orderNumber + "】");
 
         String key = "com.wmx.wmxredis.controller.RedissonController.payment2_" + orderNumber;
-        /**
-         * getLock(String name)：按名称返回锁实例，实现了一个非公平的可重入锁，因此不能保证线程获得顺序
-         * lock():获取锁，如果锁不可用，则当前线程将处于休眠状态，直到获得锁为止
-         */
         RLock lock = redissonClient.getLock(key);
         lock.lock();
         try {
@@ -94,11 +91,15 @@ public class RedissonController {
     }
 
     /**
-     * RedissonClient.getLock(String name)：可重入锁
+     * RedissonClient.getLock(String name)：可重入锁, 实现了一个非公平的可重入锁，因此不能保证线程获得顺序
      * boolean tryLock(long waitTime, long leaseTime, TimeUnit unit)：尝试获取锁
-     * 1、waitTime：获取锁时的等待时间，超时自动放弃，线程不再继续阻塞，方法返回 false
-     * 2、leaseTime：获取到锁后，指定加锁的时间，超时后自动解锁
-     * 3、如果成功获取锁，则返回 true，否则返回 false。
+     * * 1、waitTime：获取锁时的等待时间，超时自动放弃，线程不再继续阻塞，方法返回 false
+     * * 2、leaseTime：获取到锁后，指定加锁的时间，超时后自动解锁
+     * * 3、如果成功获取锁，则返回 true，否则返回 false。
+     * boolean tryLock()：仅当锁在调用时可用时才获取锁。
+     * * 1、如果锁可用，则获取锁并立即返回值 true.
+     * * 2、如果锁不可用，则此方法将立即返回值 false.
+     * lock():获取锁，如果锁不可用，则当前线程将处于休眠状态，直到获得锁为止
      * <p>
      * http://localhost:8080/redisson/payment3?orderNumber=8856767
      *
@@ -111,10 +112,6 @@ public class RedissonController {
         logger.info("用户请求支付订单【" + orderNumber + "】.");
 
         String key = "com.wmx.wmxredis.controller.RedissonController.payment3_" + orderNumber;
-        /**
-         * getLock(String name)：按名称返回锁实例，实现了一个非公平的可重入锁，因此不能保证线程获得顺序
-         * lock():获取锁，如果锁不可用，则当前线程将处于休眠状态，直到获得锁为止
-         */
         RLock lock = redissonClient.getLock(key);
         boolean tryLock = false;
         try {
@@ -146,4 +143,6 @@ public class RedissonController {
         }
         return result;
     }
+
+
 }
