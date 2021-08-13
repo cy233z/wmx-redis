@@ -160,9 +160,6 @@ public class RedisController {
     public Map<String, Object> execute(@RequestParam String key, @RequestParam String value) throws InterruptedException {
         Map<String, Object> returnMap = new HashMap<>();
         try {
-            if (1 == 1) {
-                return returnMap;
-            }
             Boolean ifAbsent = redisTemplate.opsForValue().setIfAbsent(key, value, Duration.ofSeconds(60));
             if (!ifAbsent) {
                 returnMap.put("code", 500);
@@ -174,7 +171,7 @@ public class RedisController {
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            // 接口执行完毕后删除 key
+            // 接口执行完毕后删除 key，key 不存在时 execute 方法返回 0
             String script = "if redis.call('get', KEYS[1]) == ARGV[1] then return redis.call('del', KEYS[1]) else return 0 end";
             RedisScript<Long> redisScript = RedisScript.of(script, Long.class);
             // 返回删除key的个数，未删除成功时，返回 0
