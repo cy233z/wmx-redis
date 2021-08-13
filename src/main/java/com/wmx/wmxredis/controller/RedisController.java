@@ -159,8 +159,9 @@ public class RedisController {
     @GetMapping("redis/execute")
     public Map<String, Object> execute(@RequestParam String key, @RequestParam String value) throws InterruptedException {
         Map<String, Object> returnMap = new HashMap<>();
+        Boolean ifAbsent = false;
         try {
-            Boolean ifAbsent = redisTemplate.opsForValue().setIfAbsent(key, value, Duration.ofSeconds(60));
+            ifAbsent = redisTemplate.opsForValue().setIfAbsent(key, value, Duration.ofSeconds(60));
             if (!ifAbsent) {
                 returnMap.put("code", 500);
                 returnMap.put("msg", "程序正在处理中，请稍后再试！");
@@ -171,17 +172,22 @@ public class RedisController {
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            // 接口执行完毕后删除 key，key 不存在时 execute 方法返回 0
-            String script = "if redis.call('get', KEYS[1]) == ARGV[1] then return redis.call('del', KEYS[1]) else return 0 end";
-            RedisScript<Long> redisScript = RedisScript.of(script, Long.class);
-            // 返回删除key的个数，未删除成功时，返回 0
-            Object execute = redisTemplate.execute(redisScript, Arrays.asList(key), value);
-            returnMap.put("data", execute);
+            if (ifAbsent){
+                // 接口执行完毕后删除 key，key 不存在时 execute 方法返回 0
+                String script = "if redis.call('get', KEYS[1]) == ARGV[1] then return redis.call('del', KEYS[1]) else return 0 end";
+                RedisScript<Long> redisScript = RedisScript.of(script, Long.class);
+                // 返回删除key的个数，未删除成功时，返回 0
+                Object execute = redisTemplate.execute(redisScript, Arrays.asList(key), value);
+                returnMap.put("data", execute);
+            }
         }
         returnMap.put("code", 200);
         returnMap.put("msg", "seccess");
         return returnMap;
     }
 
+    public static void main(String[] args) {
+
+    }
 }
 
