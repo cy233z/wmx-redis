@@ -13,12 +13,13 @@ import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.ListOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
+import org.springframework.data.redis.core.script.RedisScript;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.util.Date;
-import java.util.List;
+import java.time.Duration;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -136,5 +137,54 @@ public class RedisController {
             }
         }
     }
+
+    /**
+     * http://localhost:8080/redis/execute?key=wwww&value=1rui
+     * <p>
+     * Boolean setIfAbsent(K key, V value, long timeout, TimeUnit unit)
+     * Boolean setIfAbsent(K key, V value, Duration timeout)
+     * * 1、key 不存在时进行设值，返回 true; 否则 key 存在时，不进行设值，返回 false.
+     * * 2、此方法相当于先设置 key，然后设置 key 的过期时间，它的操作是原子性的，是事务安全的。
+     * * 3、相当于：SET anyLock unique_value NX PX 30000，NX是指如果key不存在就成功，key存在返回false，PX可以指定过期时间
+     * T execute(RedisScript<T> script, List<K> keys, Object... args)：执行给定的脚本。
+     * * 1、多个操作使用 lau 脚本统一执行是事务安全的，具有原子性
+     * * 2、脚本中 KEYS[x] 是对 keys 进去取值，ARGV[x] 是对 args 进行取值，索引从1开始.
+     * * 3、返回脚本执行的结果，类型与 RedisScript 的类型一致。
+     *
+     * @param key
+     * @param value
+     * @return
+     * @throws InterruptedException
+     */
+    @GetMapping("redis/execute")
+    public Map<String, Object> execute(@RequestParam String key, @RequestParam String value) throws InterruptedException {
+        Map<String, Object> returnMap = new HashMap<>();
+        try {
+            if (1 == 1) {
+                return returnMap;
+            }
+            Boolean ifAbsent = redisTemplate.opsForValue().setIfAbsent(key, value, Duration.ofSeconds(60));
+            if (!ifAbsent) {
+                returnMap.put("code", 500);
+                returnMap.put("msg", "程序正在处理中，请稍后再试！");
+                return returnMap;
+            }
+            TimeUnit.SECONDS.sleep(10);//休眠 10 秒，模拟执行业务代码
+            System.out.println("执行业务代码.");
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            // 接口执行完毕后删除 key
+            String script = "if redis.call('get', KEYS[1]) == ARGV[1] then return redis.call('del', KEYS[1]) else return 0 end";
+            RedisScript<Long> redisScript = RedisScript.of(script, Long.class);
+            // 返回删除key的个数，未删除成功时，返回 0
+            Object execute = redisTemplate.execute(redisScript, Arrays.asList(key), value);
+            returnMap.put("data", execute);
+        }
+        returnMap.put("code", 200);
+        returnMap.put("msg", "seccess");
+        return returnMap;
+    }
+
 }
 
