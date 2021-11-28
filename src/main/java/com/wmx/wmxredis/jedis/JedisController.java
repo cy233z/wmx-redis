@@ -8,13 +8,13 @@ import org.springframework.data.redis.connection.jedis.JedisConnection;
 import org.springframework.data.redis.core.RedisConnectionUtils;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import redis.clients.jedis.Jedis;
 
 import javax.annotation.Resource;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Jedis 客户端 API 练习——操作 Redis 数据库
@@ -43,14 +43,23 @@ public class JedisController {
     private RedisConnectionFactory redisConnectionFactory;
 
     /**
-     * http://localhost:8080/jedis/getJedis
+     * 保存字符串值
+     * http://localhost:8080/jedis/setValue?key=hello&value=你好
+     * http://localhost:8080/jedis/setValue?key=hello&value=Hi&isAppend=1
+     * <p>
+     * String set(final String key, final String value)：为 key 设置字符串值, 字符串值长度不能超过1073741824字节(1 GB)，返回状态代码回复
+     * Long append(final String key, final String value)：如果键已经存在并且是字符串，则在值的末尾追加提供的新值。如果键不存在，它将被创建。返回追加操作后字符串的总长度。
      *
+     * @param key      ：key
+     * @param value    ：value
+     * @param isAppend ：是否追加内容, key 不存在时自动创建
      * @return
      */
-    @GetMapping("/jedis/getJedis")
-    public Map<String, Object> getJedis() {
+    @GetMapping("/jedis/setValue")
+    public Map<String, Object> setValue(@RequestParam String key, @RequestParam String value, Integer isAppend) {
         Map<String, Object> resultMap = new HashMap<>(8);
         resultMap.put("code", 200);
+        resultMap.put("msg", "success");
 
         JedisConnection jedisConnection = null;
         try {
@@ -67,9 +76,11 @@ public class JedisController {
 
             // 有了 Jedis 则可以使用它的任意方法操作 Redis 了
             Jedis jedis = jedisConnection.getNativeConnection();
-
-            Set<String> keys = jedis.keys("*");
-            resultMap.put("data", keys);
+            if (isAppend != null && isAppend.equals(1)) {
+                jedis.append(key, value);
+            } else {
+                jedis.set(key, value);
+            }
         } catch (Exception e) {
             LOG.error(e.getMessage(), e);
             resultMap.put("code", 500);
