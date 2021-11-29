@@ -18,16 +18,16 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Jedis 客户端 API 练习——操作 Redis 数据库
+ * Jedis 客户端 API 练习——操作 Redis 字符串类型
  *
  * @author wangMaoXiong
  * @version 1.0
  * @date 2021/11/28 9:38
  */
 @RestController
-public class JedisController {
+public class JedisStrController {
 
-    private static final Logger LOG = LoggerFactory.getLogger(JedisController.class);
+    private static final Logger LOG = LoggerFactory.getLogger(JedisStrController.class);
     /**
      * 从容器中获取 RedisTemplate 实例
      * org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration 中
@@ -55,6 +55,14 @@ public class JedisController {
      * * nxxx：NX|XX，NX——仅当 key 不存在时才设置。XX——仅当key已存在时才设置
      * * expx：EX|PX，过期时间单位：EX=秒；expPX=毫秒
      * * time：以 expx 为单位的过期时间
+     * <p>
+     * 保存、设置字符串值(SET if Not eXists)，如果 key 已经存在，则不做任何操作，如果设置了键，则返回1；如果未设置键，则返回0
+     * Long setnx(final String key, final String value)
+     * 保存、设置字符串值,并指定过期时间，等价于 set(String, String) + expire(String, int)，操作是原子性的。返回状态码
+     * String setex(final String key, final int seconds, final String value)
+     * <p>
+     * 将key设置为字符串值，并返回存储在key处的旧值，字符串长度不能超过1073741824字节（1 GB）。原子操作。旧值不存在时，返回 null.
+     * String getSet(final String key, final String value)
      * <p>
      * 如果键已经存在并且是字符串，则在值的末尾追加提供的新值。如果键不存在，它将被创建。返回追加操作后字符串的总长度。
      * Long append(final byte[] key, final byte[] value)
@@ -91,6 +99,15 @@ public class JedisController {
             } else {
                 jedis.set(key, value);
             }
+
+            //当 key 不存在时才进行设置
+            jedis.setnx(key + "_setnx", value);
+            //设置键值对，并指定过期时间
+            jedis.setex(key + "_setex", 60, value);
+
+            String getSet = jedis.getSet(key + "_getSet", value);
+            System.out.println("getSet=" + getSet);
+
         } catch (Exception e) {
             LOG.error(e.getMessage(), e);
             getErrrMsg(resultMap, e);
@@ -114,7 +131,7 @@ public class JedisController {
      * 同时设置多个键值对，格式：key1,value1,key2,value2,key3,value3...。
      * MSET 和 MSETNX 都是原子操作，MSET 对于 key 存在时会覆盖，MSETNX 对于 key 存在时不做任何覆盖。
      * String mset(final String... keysvalues) ：返回 OK
-     * Long msetnx(final String... keysvalues) ：如果所有键都设置成功，则返回为1，否则返回0(即至少有一个key已经存在)
+     * Long msetnx(final String... keysvalues) ：当 key 不存在时进行设置，如果所有键都设置成功，则返回为1，否则返回0(即至少有一个key已经存在)
      *
      * @param dataMap
      * @return
@@ -209,6 +226,15 @@ public class JedisController {
 
     /**
      * http://localhost:8080/jedis/getString?key=jedis1
+     * <p>
+     * Boolean exists(final String key) :测试指定的key是否存在。存在时返回true，否则返回false。即使将空字符串设置为值的键也将返回true
+     * Long exists(final String... keys) :如果存在一个或多个键，则为大于0的整数；如果不存在任何指定键，则为0。
+     * String get(final String key) :获取指定键的值。如果密钥不存在，则返回null。如果键处存储的值不是字符串，则返回错误，因为GET只能处理字符串值。
+     * <p>
+     * 获取 key 的值，并只取其中 [startOffset,endOffset] 的内容，startOffset 从0开始，key 不存在时返回 null，endOffset 超过时间内容长度时，则以实际长度为准.
+     * String getrange(final String key, final long startOffset, final long endOffset)
+     * <p>
+     * List<String> mget(final String... keys) ：获取所有指定键的值，不存在的 key ，返回 null 值。
      *
      * @param key
      * @return
@@ -222,13 +248,17 @@ public class JedisController {
         JedisConnection jedisConnection = null;
         try {
             jedisConnection = (JedisConnection) RedisConnectionUtils.getConnection(redisConnectionFactory, true);
-
             Jedis jedis = jedisConnection.getNativeConnection();
 
             Boolean exists = jedis.exists(key);
             if (exists) {
                 String value = jedis.get(key);
+                String getrange = jedis.getrange(key, 0, 2);
+                System.out.println("getrange=" + getrange);
                 resultMap.put("data", value);
+
+                List<String> mget = jedis.mget(key, key + "_setnx", key + "_setex");
+                System.out.println("mget=" + mget);
             } else {
                 resultMap.put("msg", key + " 键不存在.");
                 resultMap.put("data", null);
