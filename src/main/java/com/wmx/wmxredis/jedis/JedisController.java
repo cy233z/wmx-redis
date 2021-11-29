@@ -207,6 +207,43 @@ public class JedisController {
         return resultMap;
     }
 
+    /**
+     * http://localhost:8080/jedis/getString?key=jedis1
+     *
+     * @param key
+     * @return
+     */
+    @GetMapping("/jedis/getString")
+    public Map<String, Object> getStringValue(@RequestParam String key) {
+        Map<String, Object> resultMap = new HashMap<>(8);
+        resultMap.put("code", 200);
+        resultMap.put("msg", "success");
+
+        JedisConnection jedisConnection = null;
+        try {
+            jedisConnection = (JedisConnection) RedisConnectionUtils.getConnection(redisConnectionFactory, true);
+
+            Jedis jedis = jedisConnection.getNativeConnection();
+
+            Boolean exists = jedis.exists(key);
+            if (exists) {
+                String value = jedis.get(key);
+                resultMap.put("data", value);
+            } else {
+                resultMap.put("msg", key + " 键不存在.");
+                resultMap.put("data", null);
+            }
+        } catch (Exception e) {
+            LOG.error(e.getMessage(), e);
+            getErrrMsg(resultMap, e);
+        } finally {
+            if (jedisConnection != null) {
+                RedisConnectionUtils.releaseConnection(jedisConnection, redisConnectionFactory);
+            }
+        }
+        return resultMap;
+    }
+
 
     private void getErrrMsg(Map<String, Object> resultMap, Exception e) {
         resultMap.put("code", 500);
