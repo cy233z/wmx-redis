@@ -1,5 +1,6 @@
 package com.wmx.wmxredis.jedis;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
@@ -51,7 +52,7 @@ public class JedisController {
      * String set(final String key, final String value)
      * String set(final String key, final String value, final String nxxx, final String expx,final long time)
      * String set(final byte[] key, final byte[] value, final byte[] nxxx, final byte[] expx,final long time)
-     * * nxxx：NX|XX，NX——仅当密钥不存在时才设置该密钥。XX——仅当密钥已存在时才设置该密钥
+     * * nxxx：NX|XX，NX——仅当 key 不存在时才设置。XX——仅当key已存在时才设置
      * * expx：EX|PX，过期时间单位：EX=秒；expPX=毫秒
      * * time：以 expx 为单位的过期时间
      * <p>
@@ -156,17 +157,24 @@ public class JedisController {
 
     /**
      * http://localhost:8080/jedis/delKeys?keys=jedis,hi
+     * http://localhost:8080/jedis/delKeys?isFlushDb=1
+     * http://localhost:8080/jedis/delKeys?isFlushAll=1
+     * <p>
      * 删除指定的 key, 如果给定的 key 不存在，则不会执行任何操作，返回已删除的键数
      * Long del(final String key)
      * Long del(final String... keys)
      * Long del(final byte[] key)
      * Long del(final byte[]... keys)
+     * String flushDB()：删除当前选定数据库的所有键，这个命令永远不会失败。
+     * String flushAll()：删除所有现有数据库的所有键，而不仅仅是当前选定的数据库，这个命令永远不会失败
      *
-     * @param keys ：用逗号分隔，如 a,b,c
+     * @param keys       ：用逗号分隔，如 a,b,c
+     * @param isFlushDb  ：是否清空整个 db 库，值为 1 则清空
+     * @param isFlushAll ：是否清空所有的 db 库，值为 1 则清空
      * @return
      */
     @GetMapping("/jedis/delKeys")
-    public Map<String, Object> delKeys(@RequestParam String keys) {
+    public Map<String, Object> delKeys(String keys, Integer isFlushDb, Integer isFlushAll) {
         Map<String, Object> resultMap = new HashMap<>(8);
         resultMap.put("code", 200);
         resultMap.put("msg", "success");
@@ -176,9 +184,17 @@ public class JedisController {
             jedisConnection = (JedisConnection) RedisConnectionUtils.getConnection(redisConnectionFactory, true);
 
             Jedis jedis = jedisConnection.getNativeConnection();
-            String[] split = keys.split(",");
-            Long del = jedis.del(split);
-            resultMap.put("data", del);
+            if (StringUtils.isNotBlank(keys)) {
+                String[] split = keys.split(",");
+                Long del = jedis.del(split);
+                resultMap.put("data", del);
+            }
+            if (isFlushDb != null && isFlushDb.equals(1)) {
+                jedis.flushDB();
+            }
+            if (isFlushAll != null && isFlushAll.equals(1)) {
+                jedis.flushAll();
+            }
         } catch (Exception e) {
             LOG.error(e.getMessage(), e);
             getErrrMsg(resultMap, e);
@@ -189,6 +205,7 @@ public class JedisController {
         }
         return resultMap;
     }
+
 
     private void getErrrMsg(Map<String, Object> resultMap, Exception e) {
         resultMap.put("code", 500);
