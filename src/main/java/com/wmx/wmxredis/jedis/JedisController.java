@@ -184,17 +184,18 @@ public class JedisController {
             jedisConnection = (JedisConnection) RedisConnectionUtils.getConnection(redisConnectionFactory, true);
 
             Jedis jedis = jedisConnection.getNativeConnection();
+            Object status = null;
             if (StringUtils.isNotBlank(keys)) {
                 String[] split = keys.split(",");
-                Long del = jedis.del(split);
-                resultMap.put("data", del);
+                status = jedis.del(split);
             }
             if (isFlushDb != null && isFlushDb.equals(1)) {
-                jedis.flushDB();
+                status = jedis.flushDB();
             }
             if (isFlushAll != null && isFlushAll.equals(1)) {
-                jedis.flushAll();
+                status = jedis.flushAll();
             }
+            resultMap.put("data", status);
         } catch (Exception e) {
             LOG.error(e.getMessage(), e);
             getErrrMsg(resultMap, e);
