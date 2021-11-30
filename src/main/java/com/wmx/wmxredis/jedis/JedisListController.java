@@ -35,18 +35,21 @@ public class JedisListController {
 
     /**
      * 为 list 设置值
-     * http://localhost:8080/jedis/setList?key=jedisList&value=你好
+     * http://localhost:8080/jedis/setList?key=jedisList&value=100
+     * http://localhost:8080/jedis/setList?key=jedisList&value=200&index=10
      * <p>
      * 将字符串值添加到列表的头部（LPUSH）或尾部（RPUSH），如果键不存在，将在追加操作之前创建一个空列表。如果key存在但不是列表，则返回错误。返回添加后列表中的元素个数。
      * Long rpush(final String key, final String... strings)
      * Long lpush(final String key, final String... strings)
+     * 更新列表指定索引位置的元素。超出范围的索引将生成错误。与接受索引的其他列表命令类似，索引可以是负数，如-1是最后一个元素，-2是倒数第二个元素，依此类推。
+     * String lset(final String key, final long index, final String value)
      *
      * @param key   ：键
      * @param value ：值
      * @return
      */
     @GetMapping("/jedis/setList")
-    public Map<String, Object> setList(@RequestParam String key, @RequestParam String value) {
+    public Map<String, Object> setList(@RequestParam String key, @RequestParam String value, Integer index) {
         Map<String, Object> resultMap = new HashMap<>(8);
         resultMap.put("code", 200);
         resultMap.put("msg", "success");
@@ -58,9 +61,15 @@ public class JedisListController {
             // 有了 Jedis 则可以使用它的任意方法操作 Redis 了
             Jedis jedis = jedisConnection.getNativeConnection();
 
-            Long rpush = jedis.rpush(key, value);
-            Long lpush = jedis.lpush(key, value);
-            System.out.println("rpush=" + rpush + ", lpush=" + lpush);
+            if (index != null && index >= 0 && index < jedis.llen(key)) {
+                //更新指定索引位置的元素
+                jedis.lset(key, index, value);
+            } else {
+                //向列表末尾添加元素
+                Long rpush = jedis.rpush(key, value);
+                //向列表头部添加元素
+                //Long lpush = jedis.lpush(key, value);
+            }
 
         } catch (Exception e) {
             LOG.error(e.getMessage(), e);
@@ -109,6 +118,10 @@ public class JedisListController {
 
             //获取指定范围内的元素
             List<String> lrange = jedis.lrange(key, 0, -1);
+
+            //对返回的元素进行排序，如果元素中存在非数字，则报错：JedisDataException: ERR One or more scores can't be converted into double
+            List<String> sort = jedis.sort(key);
+            System.out.println("sort=" + sort);
 
             resultMap.put("data", lrange);
         } catch (Exception e) {
