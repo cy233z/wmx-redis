@@ -128,6 +128,24 @@ public class JedisSetController {
         return resultMap;
     }
 
+    /**
+     * http://localhost:8080/jedis/orderSet
+     * <p>
+     * 将具有指定权重的元素添加到有序集合中，如果元素存在，则更新权重，并插入到正确的位置以确保排序。
+     * 若key不存在，将创建一个新的有序集合，然后添加元素。如果key存在但不是有序集合，则返回错误。
+     * 如果添加了新元素，则返回1，如果元素已经存在，且分数已更新，则返回0。权重小的
+     * Long zadd(final String key, final double score, final String member)
+     * <p>
+     * Set<String> zrange(final String key, final long start, final long stop)：获取索范围内的元素，从0开始，-1表示倒数第一个元素。
+     * Set<String> zrevrange(final String key, final long start, final long stop)：获取索范围内的元素，并反序输出(不会改变存储的顺序)
+     * Long zcard(final String key)：获取集合的元素个数，key 不存在时返回 0
+     * <p>
+     * Double zscore(final String key, final String member)：获取有序集合中元素的权重，元素/key不存在时，返回 null.
+     * Long zrem(final String key, final String... members)：删除有序集合中指定的元素，如果新元素被删除，则返回1；如果新元素不是集合的成员，则返回0
+     * Long zcount(final String key, final double min, final double max)：获取指定权重范围[min.max]内的元素个数
+     *
+     * @return
+     */
     @GetMapping("/jedis/orderSet")
     public Map<String, Object> orderSet() {
         Map<String, Object> resultMap = new HashMap<>(8);
@@ -144,24 +162,26 @@ public class JedisSetController {
             jedis.zadd("orderSet", 250, "衡山");
             jedis.zadd("orderSet", 450, "少室山");
             jedis.zadd("orderSet", 800, "九华山");
-            jedis.zadd("orderSet", 900, "黄山");
+            jedis.zadd("orderSet", 100, "黄山");
 
-            //
+            // 获取整个集合的元素：[黄山, 华山, 衡山, 泰山, 少室山, 九华山]
             Set<String> zrange = jedis.zrange("orderSet", 0, -1);
             System.out.println("zrange=" + zrange);
 
+            // 获取索范围内的元素，并反序输出：[九华山, 少室山, 泰山, 衡山, 华山, 黄山]
             Set<String> zrevrange = jedis.zrevrange("orderSet", 0, -1);
             System.out.println("zrevrange=" + zrevrange);
 
-            // 元素个数
-            System.out.println(jedis.zcard("orderSet"));
-            // 元素下标
-            System.out.println(jedis.zscore("orderSet", "少室山"));
+            // 获取集合的元素个数
+            System.out.println("zcard=" + jedis.zcard("orderSet"));
+            // 获取元素权重
+            System.out.println("zscore=" + jedis.zscore("orderSet", "少室山"));
             // 删除元素
-            System.out.println(jedis.zrem("orderSet", "黄山"));
-            System.out.println(jedis.zcount("orderSet", 9.5, 10.5));
+            System.out.println("zrem=" + jedis.zrem("orderSet", "黄山"));
+            // 获取指定权重范围[min.max]内的元素个数
+            System.out.println("zcount=" + jedis.zcount("orderSet", 200, 400));
 
-            // 整个集合值
+            // 整个集合值 [华山, 衡山, 泰山, 少室山, 九华山]
             System.out.println(jedis.zrange("orderSet", 0, -1));
         } catch (Exception e) {
             LOG.error(e.getMessage(), e);
