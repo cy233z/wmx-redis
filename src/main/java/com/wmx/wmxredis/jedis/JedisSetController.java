@@ -35,7 +35,7 @@ public class JedisSetController {
     private RedisConnectionFactory redisConnectionFactory;
 
     /**
-     * http://localhost:8080/jedis/set
+     * http://localhost:8080/jedis/disorderSet
      * <p>
      * 将元素添加到集合中，如果元素已经存在，则不执行任何操作，如果key不存在，则将创建一个新的集合，然后添加。添加成功返回1，否则返回0
      * Long sadd(final String key, final String... members)
@@ -52,11 +52,15 @@ public class JedisSetController {
      * 从集合中随机移出元素，如果集合为空或键不存在，则返回 null 对象
      * String spop(final String key)
      * Set<String> spop(final String key, final long count)：
+     * <p>
+     * Set<String> sinter(final String... keys)：获取所有集合的交集
+     * Set<String> sunion(final String... keys)：获取所有集合的并集
+     * Set<String> sdiff(final String... keys)：返回存储在key1处的集合与所有集合key2，…，keyN之间的差集
      *
      * @return
      */
-    @GetMapping("/jedis/set")
-    public Map<String, Object> set() {
+    @GetMapping("/jedis/disorderSet")
+    public Map<String, Object> disorderSet() {
         Map<String, Object> resultMap = new HashMap<>(8);
         resultMap.put("code", 200);
         resultMap.put("msg", "success");
@@ -96,18 +100,22 @@ public class JedisSetController {
             Set<String> spop = jedis.spop("jedisSet", 2);
             System.out.println("spop=" + spop);
 
-            jedis.sadd("sets1", "HashSet1");
-            jedis.sadd("sets1", "SortedSet1");
-            jedis.sadd("sets1", "TreeSet");
-            jedis.sadd("sets2", "HashSet2");
-            jedis.sadd("sets2", "SortedSet1");
-            jedis.sadd("sets2", "TreeSet1");
-            // 交集
-            System.out.println(jedis.sinter("sets1", "sets2"));
-            // 并集
-            System.out.println(jedis.sunion("sets1", "sets2"));
-            // 差集
-            System.out.println(jedis.sdiff("sets1", "sets2"));
+            jedis.sadd("sets1", "华山");
+            jedis.sadd("sets1", "泰山");
+            jedis.sadd("sets1", "衡山");
+
+            jedis.sadd("sets2", "武当山");
+            jedis.sadd("sets2", "少室山");
+            jedis.sadd("sets2", "华山");
+            // 交集 [华山]
+            Set<String> sinter = jedis.sinter("sets1", "sets2");
+            System.out.println("sinter=" + sinter);
+            // 并集 [华山, 武当山, 衡山, 泰山, 少室山]
+            Set<String> sunion = jedis.sunion("sets1", "sets2");
+            System.out.println("sunion=" + sunion);
+            // 差集 [衡山, 泰山]
+            Set<String> sdiff = jedis.sdiff("sets1", "sets2");
+            System.out.println("sdiff=" + sdiff);
 
         } catch (Exception e) {
             LOG.error(e.getMessage(), e);
@@ -120,6 +128,51 @@ public class JedisSetController {
         return resultMap;
     }
 
+    @GetMapping("/jedis/orderSet")
+    public Map<String, Object> orderSet() {
+        Map<String, Object> resultMap = new HashMap<>(8);
+        resultMap.put("code", 200);
+        resultMap.put("msg", "success");
+
+        JedisConnection jedisConnection = null;
+        try {
+            jedisConnection = (JedisConnection) RedisConnectionUtils.getConnection(redisConnectionFactory, true);
+            Jedis jedis = jedisConnection.getNativeConnection();
+
+            jedis.zadd("orderSet", 200, "华山");
+            jedis.zadd("orderSet", 300, "泰山");
+            jedis.zadd("orderSet", 250, "衡山");
+            jedis.zadd("orderSet", 450, "少室山");
+            jedis.zadd("orderSet", 800, "九华山");
+            jedis.zadd("orderSet", 900, "黄山");
+
+            //
+            Set<String> zrange = jedis.zrange("orderSet", 0, -1);
+            System.out.println("zrange=" + zrange);
+
+            Set<String> zrevrange = jedis.zrevrange("orderSet", 0, -1);
+            System.out.println("zrevrange=" + zrevrange);
+
+            // 元素个数
+            System.out.println(jedis.zcard("orderSet"));
+            // 元素下标
+            System.out.println(jedis.zscore("orderSet", "少室山"));
+            // 删除元素
+            System.out.println(jedis.zrem("orderSet", "黄山"));
+            System.out.println(jedis.zcount("orderSet", 9.5, 10.5));
+
+            // 整个集合值
+            System.out.println(jedis.zrange("orderSet", 0, -1));
+        } catch (Exception e) {
+            LOG.error(e.getMessage(), e);
+            getErrrMsg(resultMap, e);
+        } finally {
+            if (jedisConnection != null) {
+                RedisConnectionUtils.releaseConnection(jedisConnection, redisConnectionFactory);
+            }
+        }
+        return resultMap;
+    }
 
     private void getErrrMsg(Map<String, Object> resultMap, Exception e) {
         resultMap.put("code", 500);
