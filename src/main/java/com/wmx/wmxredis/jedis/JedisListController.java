@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.SortingParams;
 
 import javax.annotation.Resource;
 import java.util.HashMap;
@@ -91,23 +92,21 @@ public class JedisListController {
 
     /**
      * 获取 List 中的元素
-     * http://localhost:8080/jedis/getList?key=jedisList
-     * http://localhost:8080/jedis/getList?key=jedisList&index=2
+     * http://localhost:8080/jedis/getList
      * <p>
      * 获取列表中指定索引范围内的元素，从0开始，-1表示倒数第一个元素，-2表示倒数第二个元素。超出范围的索引不会产生错误。
      * List<String> lrange(final String key, final long start, final long stop)
      * Long llen(final String key)：返回列表的长度，如果key不存在，则返回0（与空列表的行为相同）,如果键处存储的值不是列表，则返回错误。
-     * List<String> sort(final String key)：对集合或列表进行排序。默认情况下，只能对数字进行排序，否则报错，元素作为双精度浮点数进行比较。这是最简单的排序形式
+     * List<String> sort(final String key)：对集合或列表进行排序(并不改变存储的值)。默认情况下，只能对数字进行排序，否则报错，元素作为双精度浮点数进行比较。这是最简单的排序形式
      * <p>
      * 获取指定索引位置的元素，索引从0开始，支持负索引，例如-1是最后一个元素，-2是倒数第二个元素，依此类推。
      * 如果key对应的值不是列表类型，则返回错误。如果索引超出范围，则返回 null
      * String lindex(final String key, final long index)
      *
-     * @param key
      * @return
      */
     @GetMapping("/jedis/getList")
-    public Map<String, Object> getList(@RequestParam String key, Integer index) {
+    public Map<String, Object> getList() {
         Map<String, Object> resultMap = new HashMap<>(8);
         resultMap.put("code", 200);
         resultMap.put("msg", "success");
@@ -119,21 +118,53 @@ public class JedisListController {
             // 有了 Jedis 则可以使用它的任意方法操作 Redis 了
             Jedis jedis = jedisConnection.getNativeConnection();
 
+            jedis.del("mylist1");
+            jedis.lpush("mylist1", "1");
+            jedis.lpush("mylist1", "40");
+            jedis.lpush("mylist1", "6");
+            jedis.lpush("mylist1", "45");
+            jedis.lpush("mylist1", "10");
+            jedis.lpush("mylist1", "56");
+
             //获取列表的长度
-            Long llen = jedis.llen(key);
+            Long llen = jedis.llen("mylist1");
             System.out.println("列表长度：" + llen);
 
-            //获取指定范围内的元素
-            List<String> lrange = jedis.lrange(key, 0, -1);
-
             //对返回的元素进行排序，如果元素中存在非数字，则报错：JedisDataException: ERR One or more scores can't be converted into double
-            List<String> sort = jedis.sort(key);
+            List<String> sort = jedis.sort("mylist1");
             System.out.println("sort=" + sort);
 
-            if (index != null) {
-                String lindex = jedis.lindex(key, index);
-                System.out.println("lindex=" + lindex);
-            }
+            //获取指定范围内的元素
+            List<String> lrange = jedis.lrange("mylist1", 0, -1);
+            System.out.println("lrange=" + lrange);
+
+            jedis.del("mylist");
+            jedis.lpush("mylist", "1");
+            jedis.lpush("mylist", "40");
+            jedis.lpush("mylist", "6");
+            jedis.lpush("mylist", "a");
+            jedis.lpush("mylist", "FK");
+            jedis.lpush("mylist", "AH");
+            jedis.lpush("mylist", "中国");
+
+            //使用排序参数 SortingParams 对数字以外的值进行排序,会改变实际存储的值的顺序
+            //SortingParams desc()：降序排序
+            //SortingParams asc()：升序排序(默认)
+            //SortingParams alpha()：按字典顺序排序(支持任意字符)，默认只能对数字排序
+            //SortingParams limit(final int start, final int count)：分页查询(限制返回的条数), start 开始位置的索引，从零开始；count 获取的数量
+            SortingParams sortingParameters = new SortingParams();
+            sortingParameters.desc();
+            sortingParameters.alpha();
+            sortingParameters.limit(0, jedis.llen("mylist").intValue());
+            List<String> stringList = jedis.sort("mylist", sortingParameters);
+            //[中国, a, FK, AH, 6, 40, 1]
+            System.out.println("sortingParameters=" + stringList);
+
+            System.out.println(jedis.lrange("mylist", 0, -1));
+
+            String lindex = jedis.lindex("mylist", 1);
+            System.out.println("lindex=" + lindex);
+
             resultMap.put("data", lrange);
         } catch (Exception e) {
             LOG.error(e.getMessage(), e);
