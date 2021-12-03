@@ -183,6 +183,17 @@ public class JedisSetController {
 
             // 整个集合值 [华山, 衡山, 泰山, 少室山, 九华山]
             System.out.println(jedis.zrange("orderSet", 0, -1));
+
+            //返回排序集中权重介于[min,max]之间的所有元素，具有相同分数的元素按ASCII字符串的字典顺序返回
+            //Set<String> zrangeByScore(final String key, final double min, final double max)
+            Set<String> zrangeByScore = jedis.zrangeByScore("orderSet", 100, 500);
+            System.out.println("zrangeByScore=" + zrangeByScore);
+
+            //返回排序集中权重介于[min,max]之间的元素个数
+            //Long zremrangeByScore(final String key, final double min, final double max)
+            Long zremrangeByScore = jedis.zremrangeByScore("orderSet", 100, 500);
+            System.out.println("zremrangeByScore=" + zremrangeByScore);
+
         } catch (Exception e) {
             LOG.error(e.getMessage(), e);
             getErrrMsg(resultMap, e);
