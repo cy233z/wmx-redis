@@ -1,11 +1,11 @@
 package com.wmx.wmxredis.controller;
 
 import com.google.common.base.Stopwatch;
+import com.google.common.collect.Lists;
 import com.wmx.wmxredis.beans.Person;
 import com.wmx.wmxredis.resultAPI.ResultCode;
 import com.wmx.wmxredis.resultAPI.ResultData;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.tomcat.util.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.connection.DataType;
@@ -28,7 +28,6 @@ import java.util.concurrent.TimeUnit;
  * @author wangMaoXiong
  */
 @RestController
-@SuppressWarnings("all")
 public class RedisController {
 
     private static final Logger log = LoggerFactory.getLogger(RedisController.class);
@@ -172,7 +171,7 @@ public class RedisController {
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            if (ifAbsent){
+            if (ifAbsent) {
                 // 接口执行完毕后删除 key，key 不存在时 execute 方法返回 0
                 String script = "if redis.call('get', KEYS[1]) == ARGV[1] then return redis.call('del', KEYS[1]) else return 0 end";
                 RedisScript<Long> redisScript = RedisScript.of(script, Long.class);
@@ -188,6 +187,33 @@ public class RedisController {
 
     public static void main(String[] args) {
 
+    }
+
+    /**
+     * http://localhost:8080/redis/testString2
+     * <p>
+     * void set(K key, V value)：字符串类型可以直接存储 List<Map> 对象，但是存储 String[] 数组对象，反序列化时会报错。
+     */
+    @GetMapping("redis/testString2")
+    public void testString2() {
+        List<Map<String, Object>> dataList = Lists.newArrayList();
+        for (int i = 0; i < 5; i++) {
+            Map<String, Object> dataMap = new HashMap<>(8);
+            dataMap.put("fid", UUID.randomUUID().toString());
+            dataMap.put("agency_id", UUID.randomUUID().toString());
+            dataMap.put("agency_code", UUID.randomUUID().toString());
+            dataMap.put("agency_name", "雄哥测试 bgtCommonDAO");
+            dataMap.put("mof_div_id", UUID.randomUUID().toString());
+            dataMap.put("mof_div_code", UUID.randomUUID().toString());
+            dataMap.put("mof_div_name", UUID.randomUUID().toString());
+            dataMap.put("version_start", "202-10");
+            dataMap.put("version_end", "2021-12");
+            dataList.add(dataMap);
+        }
+
+        redisTemplate.opsForValue().set("wmx2", dataList);
+        List<Map<String, Object>> wmx1 = (List<Map<String, Object>>) redisTemplate.opsForValue().get("wmx2");
+        System.out.println(wmx1);
     }
 }
 
