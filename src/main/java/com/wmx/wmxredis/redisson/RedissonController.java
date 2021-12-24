@@ -20,6 +20,7 @@ import java.util.concurrent.TimeUnit;
  */
 @RestController
 public class RedissonController {
+
     private static Logger logger = LoggerFactory.getLogger(RedissonController.class);
 
     @Resource
