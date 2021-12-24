@@ -1,4 +1,4 @@
-# Redisson公共配置,与reids部署方式无关.
+# org.redisson.Config类的配置参数,适用于所有Redis组态模式（单机，集群和哨兵）
 threads: 0
 nettyThreads: 0
 codec: !<org.redisson.codec.JsonJacksonCodec> {}
