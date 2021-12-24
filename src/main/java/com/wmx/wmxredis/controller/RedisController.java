@@ -185,10 +185,6 @@ public class RedisController {
         return returnMap;
     }
 
-    public static void main(String[] args) {
-
-    }
-
     /**
      * http://localhost:8080/redis/testString2
      * <p>
