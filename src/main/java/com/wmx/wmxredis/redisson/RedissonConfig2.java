@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.net.URL;
 
 /**
- * Redisson 文件方式配置
+ * Redisson  yml 文件方式配置
  *
  * @author wangMaoXiong
  * @version 1.0
@@ -41,9 +41,7 @@ public class RedissonConfig2 {
         URL resource = RedissonConfig2.class.getClassLoader().getResource("redisson-config.yml");
         Config config = Config.fromYAML(resource);
         RedissonClient redissonClient = Redisson.create(config);
-
         log.info("Redisson 配置:{}", config.toYAML());
-
         return redissonClient;
     }
 }

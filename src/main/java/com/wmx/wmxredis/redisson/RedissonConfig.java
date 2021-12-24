@@ -8,6 +8,8 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.io.IOException;
+
 /**
  * Redisson 自定义 Redisson  配置选项配置类
  * <p>
@@ -17,8 +19,8 @@ import org.springframework.context.annotation.Configuration;
  * @version 1.0
  * @date 2020/9/24 19:28
  */
-//@Configuration
-//@EnableConfigurationProperties(RedssionProperties.class)
+@Configuration
+@EnableConfigurationProperties(RedssionProperties.class)
 public class RedissonConfig {
 
     private final RedssionProperties redssionProperties;
@@ -43,7 +45,7 @@ public class RedissonConfig {
      */
     @Bean
     @ConditionalOnProperty(prefix = "redisson", name = "type", havingValue = "stand-alone")
-    public RedissonClient redissonClient() {
+    public RedissonClient redissonClient() throws IOException {
         /**
          * Config：Redisson 配置基类，SingleServerConfig：单机部署配置类，MasterSlaveServersConfig：主从复制部署配置
          * SentinelServersConfig：哨兵模式配置，ClusterServersConfig：集群部署配置类。
@@ -64,6 +66,7 @@ public class RedissonConfig {
                 .setTimeout(redssionProperties.getTimeout())
                 .setConnectTimeout(redssionProperties.getConnectTimeout());
         RedissonClient redissonClient = Redisson.create(config);
+        System.out.println("1:" + config.toYAML());
         return redissonClient;
     }
 }
