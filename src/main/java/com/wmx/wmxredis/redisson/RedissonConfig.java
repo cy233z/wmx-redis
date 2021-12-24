@@ -17,8 +17,8 @@ import org.springframework.context.annotation.Configuration;
  * @version 1.0
  * @date 2020/9/24 19:28
  */
-@Configuration
-@EnableConfigurationProperties(RedssionProperties.class)
+//@Configuration
+//@EnableConfigurationProperties(RedssionProperties.class)
 public class RedissonConfig {
 
     private final RedssionProperties redssionProperties;
