@@ -46,13 +46,6 @@
             <version>3.13.4</version>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/org.redisson/redisson-spring-boot-starter -->
-      <!--  <dependency>
-            <groupId>org.redisson</groupId>
-            <artifactId>redisson-spring-boot-starter</artifactId>
-            <version>3.16.7</version>
-        </dependency>-->
-
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
