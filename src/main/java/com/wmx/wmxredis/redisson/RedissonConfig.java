@@ -1,4 +1,4 @@
-package com.wmx.wmxredis.config;
+package com.wmx.wmxredis.redisson;
 
 import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;
@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * Redisson 配置类
+ * Redisson 自定义 Redisson  配置选项配置类
  * <p>
  * 1、EnableConfigurationProperties：将 {@link RedssionProperties} 配置类交由 Spring 容器管理
  *
@@ -24,6 +24,7 @@ public class RedissonConfig {
     private final RedssionProperties redssionProperties;
 
     /**
+     * 自定义 Redisson  配置选项
      * 通过构造器从 Spring 容器中获取 {@link RedssionProperties}实例
      *
      * @param redssionProperties
@@ -34,6 +35,7 @@ public class RedissonConfig {
 
 
     /**
+     * 自定义 Redisson  配置选项
      * redis 服务器单机部署时，创建 RedissonClient 实例，交由 Spring 容器管理
      * 只有当配置了 redisson.type=stand-alone 时，才继续生成 RedissonClient 实例并交由 Spring 容器管理
      *

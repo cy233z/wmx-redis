@@ -1,4 +1,4 @@
-package com.wmx.wmxredis.controller;
+package com.wmx.wmxredis.redisson;
 
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
@@ -65,7 +65,7 @@ public class RedissonController {
         String result = "订单【" + orderNumber + "】支付成功!";
         logger.info("用户请求支付订单【" + orderNumber + "】");
 
-        String key = "com.wmx.wmxredis.controller.RedissonController.payment2_" + orderNumber;
+        String key = "com.wmx.wmxredis.redisson.RedissonController.payment2_" + orderNumber;
         RLock lock = redissonClient.getLock(key);
         lock.lock();
         try {
@@ -111,7 +111,7 @@ public class RedissonController {
         String result = "订单【" + orderNumber + "】支付成功.";
         logger.info("用户请求支付订单【" + orderNumber + "】.");
 
-        String key = "com.wmx.wmxredis.controller.RedissonController.payment3_" + orderNumber;
+        String key = "com.wmx.wmxredis.redisson.RedissonController.payment3_" + orderNumber;
         RLock lock = redissonClient.getLock(key);
         boolean tryLock = false;
         try {

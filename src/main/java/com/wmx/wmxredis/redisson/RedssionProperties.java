@@ -1,4 +1,4 @@
-package com.wmx.wmxredis.config;
+package com.wmx.wmxredis.redisson;
 
 import org.redisson.config.BaseConfig;
 import org.redisson.config.Config;
