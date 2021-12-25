@@ -18,7 +18,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Redssion 操作 redis 5 种基本数据类型
+ * Redssion 操作 redis 5 种基本数据类型，提供了丰富的 API
  * <p>
  * {@link RBucket}：对象处理器，可以操作字符串类型，最大大小支持 512MB，其中所有的操作都提供了同步和异步两种方法
  * {@link RMap}：操作 Map 数据类型，继承自 ConcurrentMap，线程安全，key-value 都不允许为 null。同样有异步方法。
