@@ -37,9 +37,6 @@ public class RedssionHelloController {
     @Autowired
     private RedissonClient redissonClient;
 
-    static long i = 20;
-    static long sum = 300;
-
     // ========================== String =======================
 
     /**
@@ -82,7 +79,6 @@ public class RedssionHelloController {
         //boolean isDone():如果此任务已完成，则返回 true,完成可能是由于正常终止、异常或取消
         //boolean isSuccess():当且仅当I/O操作成功完成时返回 true
         String value2 = rFuture.get();
-
 
         boolean clearExpire = stringRBucket.clearExpire();
         System.out.println("clearExpire=" + clearExpire);
