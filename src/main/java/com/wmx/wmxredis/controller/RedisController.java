@@ -157,7 +157,7 @@ public class RedisController {
      */
     @GetMapping("redis/execute")
     public Map<String, Object> execute(@RequestParam String key, @RequestParam String value) throws InterruptedException {
-        Map<String, Object> returnMap = new HashMap<>();
+        Map<String, Object> returnMap = new HashMap<>(8);
         Boolean ifAbsent = false;
         try {
             ifAbsent = redisTemplate.opsForValue().setIfAbsent(key, value, Duration.ofSeconds(60));
@@ -166,7 +166,8 @@ public class RedisController {
                 returnMap.put("msg", "程序正在处理中，请稍后再试！");
                 return returnMap;
             }
-            TimeUnit.SECONDS.sleep(10);//休眠 10 秒，模拟执行业务代码
+            //休眠 10 秒，模拟执行业务代码
+            TimeUnit.SECONDS.sleep(10);
             System.out.println("执行业务代码.");
         } catch (Exception e) {
             e.printStackTrace();

@@ -48,12 +48,13 @@ public class JedisStrController {
      * http://localhost:8080/jedis/setString?key=jedis&value=你好
      * http://localhost:8080/jedis/setString?key=jedis&value=Hi&isAppend=1
      * <p>
-     * 为 key 设置字符串值(key存在时覆盖), 字符串值长度不能超过1073741824字节(1 GB)，返回状态代码回复：
+     * 为 key 设置字符串值(key存在时覆盖), 字符串值长度不能超过1073741824字节(1 GB)，返回状态代码回复 "OK"
      * String set(final String key, final String value)
+     * String set(final String key, final String value, final String nxxx)
      * String set(final String key, final String value, final String nxxx, final String expx,final long time)
      * String set(final byte[] key, final byte[] value, final byte[] nxxx, final byte[] expx,final long time)
-     * * nxxx：NX|XX，NX——仅当 key 不存在时才设置。XX——仅当key已存在时才设置
-     * * expx：EX|PX，过期时间单位：EX=秒；expPX=毫秒
+     * * nxxx：可选值有 NX、XX，NX 表示仅当 key 不存在时才设置。XX表示仅当key已存在时才设置
+     * * expx：可选值有 EX、PX，表示过期时间的单位，EX 表示秒，PX 表示毫秒
      * * time：以 expx 为单位的过期时间
      * <p>
      * 保存、设置字符串值(SET if Not eXists)，如果 key 已经存在，则不做任何操作，如果设置了键，则返回1；如果未设置键，则返回0
@@ -108,6 +109,13 @@ public class JedisStrController {
             String getSet = jedis.getSet(key + "_getSet", value);
             System.out.println("getSet=" + getSet);
 
+            String setNXKey = jedis.set("NX_KEY", "key不存在时进行设置", "NX", "EX", 60);
+            String setXxKey = jedis.set("XX_KEY", "key存在时进行设置", "XX", "PX", 60 * 1000);
+            System.out.println("setNXKey=" + setNXKey + "," + "setXxKey=" + setXxKey);
+
+            String nxKey = jedis.get("NX_KEY");
+            String xxKey = jedis.get("XX_KEY");
+            System.out.println("nxKey=" + nxKey + "," + "xxKey=" + xxKey);
         } catch (Exception e) {
             LOG.error(e.getMessage(), e);
             getErrrMsg(resultMap, e);
