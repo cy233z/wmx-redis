@@ -1,5 +1,6 @@
 package com.wmx.wmxredis.jedis;
 
+import com.google.common.collect.Lists;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
@@ -89,8 +90,8 @@ public class JedisCommonController {
             System.out.println("rename=" + rename);
 
             //String select(final int index): 选择指定索引的数据库，默认情况下，将自动选择每个新的客户端连接到 DB 0
-            String select = jedis.select(1);
-            System.out.println("select=" + select);
+            //String select = jedis.select(3);
+            //System.out.println("select=" + select);
 
             //Long dbSize():返回当前选定数据库中 key 的个数。
             Long dbSize = jedis.dbSize();
@@ -110,9 +111,13 @@ public class JedisCommonController {
             System.out.println(jedis.incr("wang"));
             System.out.println(jedis.incr("wang"));
 
+
+            jedis.set("code_1", "20009");
+            int delKeyByScript = delKeyByScript("code_1", "20009");
+            System.out.println("delKeyByScript=" + delKeyByScript);
         } catch (Exception e) {
             LOG.error(e.getMessage(), e);
-            getErrrMsg(resultMap, e);
+            getErrMsg(resultMap, e);
         } finally {
             /**
              * releaseConnection(@Nullable RedisConnection conn, RedisConnectionFactory factory)：关闭通过给定工厂创建的给定连接（如果未进行外部管理（即未绑定到线程）
@@ -126,7 +131,40 @@ public class JedisCommonController {
         return resultMap;
     }
 
-    private void getErrrMsg(Map<String, Object> resultMap, Exception e) {
+    /**
+     * 执行 lua 脚本——原子操作
+     * Object eval(final String script)
+     * Object eval(final String script, final List<String> keys, final List<String> args)
+     * * keys 对应脚本中 KEYS[index] 占位符，index 是列表中的索引，从 1 开始，如 KEYS[1] 表示取其中第1个元素，
+     * * args 对应脚本中 ARGV[index] 占位符，index 是列表中的索引，从 1 开始，如 ARGV[3] 表示取其中第3个元素，
+     *
+     * @param key
+     * @param val
+     * @return
+     */
+    public int delKeyByScript(String key, String val) {
+        JedisConnection jedisConnection = null;
+        try {
+            jedisConnection = (JedisConnection) RedisConnectionUtils.getConnection(redisConnectionFactory, true);
+            Jedis jedis = jedisConnection.getNativeConnection();
+            if (jedis == null) {
+                return 0;
+            }
+            String script = "if redis.call('get', KEYS[1]) == ARGV[1] then return redis.call('del', KEYS[1]) else return 0 end";
+            Object eval = jedis.eval(script, Lists.newArrayList(key), Lists.newArrayList(val));
+            return Integer.valueOf(eval.toString());
+        } catch (Exception e) {
+            LOG.error(e.getMessage(), e);
+        } finally {
+            if (jedisConnection != null) {
+                RedisConnectionUtils.releaseConnection(jedisConnection, redisConnectionFactory);
+            }
+        }
+        return 0;
+    }
+
+
+    private void getErrMsg(Map<String, Object> resultMap, Exception e) {
         resultMap.put("code", 500);
         resultMap.put("msg", e.getMessage());
         resultMap.put("data", null);
