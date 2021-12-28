@@ -2,14 +2,12 @@ package com.wmx.wmxredis.validator;
 
 import org.hibernate.validator.constraints.Length;
 
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Date;
 
 /**
- * 人员信息
+ * 人员信息实体类
  *
  * @author wangMaoXiong
  * @version 1.0
