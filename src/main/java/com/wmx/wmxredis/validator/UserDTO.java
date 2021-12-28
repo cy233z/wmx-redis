@@ -2,6 +2,9 @@ package com.wmx.wmxredis.validator;
 
 import org.hibernate.validator.constraints.Length;
 
+import javax.validation.Valid;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Date;
@@ -17,17 +20,28 @@ public class UserDTO implements Serializable {
 
     private static final long serialVersionUID = -4874404701375841686L;
 
+    @NotBlank(groups = Update.class)
     private String uid;
 
-    @javax.validation.constraints.NotNull
-    @org.hibernate.validator.constraints.Length(min = 4, max = 16)
+    @NotNull(groups = {Save.class, Update.class})
+    @Length(min = 4, max = 16, groups = {Save.class, Update.class})
     private String userName;
-    @NotNull
-    @Length(min = 6, max = 18)
+
+    @NotNull(groups = {Save.class, Update.class})
+    @Length(min = 6, max = 18, groups = {Save.class, Update.class})
     private String password;
+
     private Date birthday;
+
+    @Min(value = 100, groups = {Save.class, Update.class})
+    @NotNull(groups = {Save.class, Update.class})
     private Float salary;
+
     private Boolean marry;
+
+    @Valid
+    @NotNull(groups = {Save.class, Update.class})
+    private UserCardDTO userCardDTO;
 
     public String getUid() {
         return uid;
@@ -77,6 +91,14 @@ public class UserDTO implements Serializable {
         this.marry = marry;
     }
 
+    public UserCardDTO getUserCardDTO() {
+        return userCardDTO;
+    }
+
+    public void setUserCardDTO(UserCardDTO userCardDTO) {
+        this.userCardDTO = userCardDTO;
+    }
+
     @Override
     public String toString() {
         return "UserDTO{" +
@@ -86,6 +108,54 @@ public class UserDTO implements Serializable {
                 ", birthday=" + birthday +
                 ", salary=" + salary +
                 ", marry=" + marry +
+                ", userCardDTO=" + userCardDTO +
                 '}';
+    }
+
+    public class UserCardDTO {
+
+        @NotBlank(groups = {Save.class, Update.class})
+        private String userCardNum;
+
+        @NotNull(groups = {Save.class, Update.class})
+        private Date publishTime;
+
+        public String getUserCardNum() {
+            return userCardNum;
+        }
+
+        public void setUserCardNum(String userCardNum) {
+            this.userCardNum = userCardNum;
+        }
+
+        public Date getPublishTime() {
+            return publishTime;
+        }
+
+        public void setPublishTime(Date publishTime) {
+            this.publishTime = publishTime;
+        }
+
+        @Override
+        public String toString() {
+            return "StuCardDTO{" +
+                    "userCardNum='" + userCardNum + '\'' +
+                    ", publishTime=" + publishTime +
+                    '}';
+        }
+    }
+
+
+    /**
+     * 新增时校验分组
+     */
+    public interface Save {
+    }
+
+    /**
+     * 更新时的校验分组
+     */
+    public interface Update {
+
     }
 }
