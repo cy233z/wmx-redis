@@ -16,9 +16,11 @@ public enum ResultCode {
     /*成功状态码*/
     SUCCESS(200, "success"),
     /*失败状态码*/
-    FAIL(500, "fail"),
+    FAIL(500, "系统繁忙，请稍后再试！"),
 
     /*参数错误:1000-1999*/
+    PARAM_IS_FAIL(1000, "参数校验未通过"),
+
     PARAM_IS_INVALID(1001, "参数无效"),
 
     PARAM_IS_BLANK(1002, "参数为空"),

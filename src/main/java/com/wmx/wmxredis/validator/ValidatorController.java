@@ -36,7 +36,7 @@ public class ValidatorController {
     }
 
     /**
-     * http://localhost:8080/validator/pathVariable/getById
+     * http://localhost:8080/validator/pathVariable/getById/1
      * <p>
      * 1、@Length：验证字符串长度是否在[mix,max]之间，默认最小值为 0，最大值为 Integer.MAX_VALUE;
      * 2、RequestParam、PathVariable 参数校验时，@Validated 标注在类上，入参前面标记具体的约束。
