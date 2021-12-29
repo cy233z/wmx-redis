@@ -33,11 +33,11 @@ public class UserDTO implements Serializable {
 
     private Date birthday;
 
+    private Boolean marry;
+
     @Min(value = 100, groups = {Save.class, Update.class})
     @NotNull(groups = {Save.class, Update.class})
     private Float salary;
-
-    private Boolean marry;
 
     @Valid
     @NotNull(groups = {Save.class, Update.class})
