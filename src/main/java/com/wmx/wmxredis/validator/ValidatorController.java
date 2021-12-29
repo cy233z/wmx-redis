@@ -58,6 +58,8 @@ public class ValidatorController {
 
     /**
      * http://localhost:8080/validator/requestBody/saveList
+     * <p>
+     * [{"userName":"张三1212","password":"1234546","birthday":"1993-10-25","salary":887,"mobileNumber":"18675456425","userCardDTO":{"userCardNum":"TTYY778","publishTime":"2021-12-12"}}]
      *
      * @param userDTOS
      * @return

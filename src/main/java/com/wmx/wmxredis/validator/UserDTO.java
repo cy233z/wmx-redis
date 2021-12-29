@@ -39,6 +39,9 @@ public class UserDTO implements Serializable {
     @NotNull(groups = {Save.class, Update.class})
     private Float salary;
 
+    @MobileNumber(groups = {Save.class, Update.class}, dec = "自定义Spring-Validation约束注解,校验手机号格式是否正确.")
+    private String mobileNumber;
+
     @Valid
     @NotNull(groups = {Save.class, Update.class})
     private UserCardDTO userCardDTO;
@@ -83,6 +86,14 @@ public class UserDTO implements Serializable {
         this.salary = salary;
     }
 
+    public String getMobileNumber() {
+        return mobileNumber;
+    }
+
+    public void setMobileNumber(String mobileNumber) {
+        this.mobileNumber = mobileNumber;
+    }
+
     public Boolean getMarry() {
         return marry;
     }
@@ -106,8 +117,9 @@ public class UserDTO implements Serializable {
                 ", userName='" + userName + '\'' +
                 ", password='" + password + '\'' +
                 ", birthday=" + birthday +
-                ", salary=" + salary +
                 ", marry=" + marry +
+                ", salary=" + salary +
+                ", mobileNumber='" + mobileNumber + '\'' +
                 ", userCardDTO=" + userCardDTO +
                 '}';
     }
