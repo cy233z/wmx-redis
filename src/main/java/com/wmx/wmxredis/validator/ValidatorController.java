@@ -25,7 +25,7 @@ import java.util.Set;
 public class ValidatorController {
 
     /**
-     * 编程式校验，不使用 @Validated 注解。
+     * 编程式校验，此时可以不使用 @Validated 注解。
      * 1、从 Spring 容器中获取 Validator 实例(默认已经有了，直接取值即可)，然后手动校验。
      */
     @Autowired
