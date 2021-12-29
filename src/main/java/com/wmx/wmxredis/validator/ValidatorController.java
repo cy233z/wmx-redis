@@ -59,7 +59,7 @@ public class ValidatorController {
     /**
      * http://localhost:8080/validator/requestBody/saveList
      * <p>
-     * [{"userName":"张三1212","password":"1234546","birthday":"1993-10-25","salary":887,"mobileNumber":"18675456425","userCardDTO":{"userCardNum":"TTYY778","publishTime":"2021-12-12"}}]
+     * [{"userName":"张三1212","password":"1234546","birthday":"1993-10-25","salary":887,"mobileNumber":"18675456425","userCardDTO":{"userCardNum":"TTYY778","publishTime":"2021-12-12"}},{"userName":"李四1212","password":"a1234546","birthday":"1995-10-25","salary":888,"mobileNumber":"18375456425","userCardDTO":{"userCardNum":"ASYY778","publishTime":"2020-12-12"}}]
      *
      * @param userDTOS
      * @return

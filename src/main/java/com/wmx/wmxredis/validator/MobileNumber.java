@@ -17,6 +17,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * 1、校验手机号码格式是否正确，接受字符串类型
  * 2、如果为 null 则不校验
  * 3、Constraint 指向具体的校验类
+ * 4、message、groups、payload 这三个属于固定属性，名称和格式必须正确，其余的属性可以自定义。
  *
  * @author wangMaoXiong
  * @version 1.0
@@ -36,13 +37,6 @@ public @interface MobileNumber {
     String message() default "手机号码格式不正确";
 
     /**
-     * 注解描述信息
-     *
-     * @return
-     */
-    String dec() default "";
-
-    /**
      * 校验分组
      *
      * @return
@@ -56,4 +50,10 @@ public @interface MobileNumber {
      */
     Class<? extends Payload>[] payload() default {};
 
+    /**
+     * 注解描述信息。
+     *
+     * @return
+     */
+    String dec() default "";
 }
