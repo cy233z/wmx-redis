@@ -3,6 +3,8 @@ package com.wmx.wmxredis.validator;
 import com.wmx.wmxredis.resultAPI.ResultData;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -88,6 +90,29 @@ public class ValidatorController {
 
         System.out.println("validateProperty=" + validateProperty);
         System.out.println("validateValue=" + validateValue);
+        return new ResultData<>(userDTO);
+    }
+
+    /**
+     * http://localhost:8080/validator/requestBody/save3
+     * <p>
+     * 1、如果校验失败 Spring Validation 内部直接抛出异常，除了全局异常处理，也可以单独处理校验异常，只需要在方法上添加一个参数 BindingResult 即可。
+     * 2、bindingResult.hasErrors() 有值则表示校验未通过。
+     *
+     * @param userDTO
+     * @param bindingResult
+     * @return
+     */
+    @PostMapping("/requestBody/save3")
+    public ResultData<UserDTO> saveUser3(@RequestBody @Validated({UserDTO.Save.class}) UserDTO userDTO, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            System.out.println("===校验失败：");
+            for (ObjectError error : bindingResult.getAllErrors()) {
+                System.out.println("\t" + error);
+            }
+        } else {
+            System.out.println("===校验通过：");
+        }
         return new ResultData<>(userDTO);
     }
 
