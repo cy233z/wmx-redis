@@ -20,30 +20,30 @@ public class UserDTO implements Serializable {
 
     private static final long serialVersionUID = -4874404701375841686L;
 
-    @NotBlank(groups = Update.class)
+    @NotBlank(groups = ValidGroup.Update.class)
     private String uid;
 
-    @NotNull(groups = {Save.class, Update.class})
-    @Length(min = 4, max = 16, groups = {Save.class, Update.class})
+    @NotNull(groups = {ValidGroup.Insert.class, ValidGroup.Update.class})
+    @Length(min = 4, max = 16, groups = {ValidGroup.Insert.class, ValidGroup.Update.class})
     private String userName;
 
-    @NotNull(groups = {Save.class, Update.class})
-    @Length(min = 6, max = 18, groups = {Save.class, Update.class})
+    @NotNull(groups = {ValidGroup.Insert.class, ValidGroup.Update.class})
+    @Length(min = 6, max = 18, groups = {ValidGroup.Insert.class, ValidGroup.Update.class})
     private String password;
 
     private Date birthday;
 
     private Boolean marry;
 
-    @Min(value = 100, groups = {Save.class, Update.class})
-    @NotNull(groups = {Save.class, Update.class})
+    @Min(value = 100, groups = {ValidGroup.Insert.class, ValidGroup.Update.class})
+    @NotNull(groups = {ValidGroup.Insert.class, ValidGroup.Update.class})
     private Float salary;
 
-    @MobileNumber(groups = {Save.class, Update.class}, dec = "自定义Spring-Validation约束注解,校验手机号格式是否正确.")
+    @MobileNumber(groups = {ValidGroup.Insert.class, ValidGroup.Update.class}, dec = "自定义Spring-Validation约束注解,校验手机号格式是否正确.")
     private String mobileNumber;
 
     @Valid
-    @NotNull(groups = {Save.class, Update.class})
+    @NotNull(groups = {ValidGroup.All.class})
     private UserCardDTO userCardDTO;
 
     public String getUid() {
@@ -126,10 +126,10 @@ public class UserDTO implements Serializable {
 
     public class UserCardDTO {
 
-        @NotBlank(groups = {Save.class, Update.class})
+        @NotBlank(groups = {ValidGroup.Insert.class, ValidGroup.Update.class})
         private String userCardNum;
 
-        @NotNull(groups = {Save.class, Update.class})
+        @NotNull(groups = {ValidGroup.Insert.class, ValidGroup.Update.class})
         private Date publishTime;
 
         public String getUserCardNum() {
@@ -155,19 +155,5 @@ public class UserDTO implements Serializable {
                     ", publishTime=" + publishTime +
                     '}';
         }
-    }
-
-
-    /**
-     * 新增时校验分组
-     */
-    public interface Save {
-    }
-
-    /**
-     * 更新时的校验分组
-     */
-    public interface Update {
-
     }
 }

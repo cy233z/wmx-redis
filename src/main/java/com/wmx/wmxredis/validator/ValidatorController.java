@@ -47,7 +47,7 @@ public class ValidatorController {
      * @return
      */
     @PostMapping("/requestBody/save")
-    public ResultData<UserDTO> saveUser(@RequestBody @Validated({UserDTO.Save.class}) UserDTO userDTO) {
+    public ResultData<UserDTO> saveUser(@RequestBody @Validated({ValidGroup.All.class}) UserDTO userDTO) {
         // 校验通过，才会执行业务逻辑处理
         System.out.println("userDTO=" + userDTO);
         return new ResultData<>(userDTO);
@@ -76,7 +76,7 @@ public class ValidatorController {
      */
     @PostMapping("/requestBody/save2")
     public ResultData<UserDTO> saveUser2(@RequestBody UserDTO userDTO) {
-        Set<ConstraintViolation<UserDTO>> constraintViolationSet = validator.validate(userDTO, UserDTO.Save.class);
+        Set<ConstraintViolation<UserDTO>> constraintViolationSet = validator.validate(userDTO, ValidGroup.Insert.class);
         if (constraintViolationSet.isEmpty()) {
             System.out.println("===校验通过：");
         } else {
@@ -85,8 +85,8 @@ public class ValidatorController {
             constraintViolationSet.stream().forEach(item -> System.out.println("\t" + item));
         }
 
-        Set<ConstraintViolation<UserDTO>> validateProperty = validator.validateProperty(userDTO, "password", UserDTO.Save.class);
-        Set<ConstraintViolation<UserDTO>> validateValue = validator.validateValue(UserDTO.class, "password", "4545", UserDTO.Save.class);
+        Set<ConstraintViolation<UserDTO>> validateProperty = validator.validateProperty(userDTO, "password", ValidGroup.Insert.class);
+        Set<ConstraintViolation<UserDTO>> validateValue = validator.validateValue(UserDTO.class, "password", "4545", ValidGroup.Insert.class);
 
         System.out.println("validateProperty=" + validateProperty);
         System.out.println("validateValue=" + validateValue);
@@ -104,7 +104,7 @@ public class ValidatorController {
      * @return
      */
     @PostMapping("/requestBody/save3")
-    public ResultData<UserDTO> saveUser3(@RequestBody @Validated({UserDTO.Save.class}) UserDTO userDTO, BindingResult bindingResult) {
+    public ResultData<UserDTO> saveUser3(@RequestBody @Validated({ValidGroup.Insert.class}) UserDTO userDTO, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             System.out.println("===校验失败：");
             for (ObjectError error : bindingResult.getAllErrors()) {
@@ -125,7 +125,7 @@ public class ValidatorController {
      * @return
      */
     @PostMapping("/requestBody/update")
-    public ResultData<UserDTO> updateUser(@RequestBody @Validated({UserDTO.Update.class}) UserDTO userDTO) {
+    public ResultData<UserDTO> updateUser(@RequestBody @Validated({ValidGroup.Update.class}) UserDTO userDTO) {
         // 校验通过，才会执行业务逻辑处理
         System.out.println("userDTO=" + userDTO);
         return new ResultData<>(userDTO);
@@ -140,7 +140,7 @@ public class ValidatorController {
      * @return
      */
     @PostMapping("/requestBody/saveList")
-    public ResultData<List<UserDTO>> saveList(@RequestBody @Validated({UserDTO.Save.class}) ValidList<UserDTO> userDTOS) {
+    public ResultData<List<UserDTO>> saveList(@RequestBody @Validated({ValidGroup.Insert.class}) ValidList<UserDTO> userDTOS) {
         // 校验通过，才会执行业务逻辑处理
         System.out.println(userDTOS);
         return new ResultData<>(userDTOS);
@@ -154,7 +154,7 @@ public class ValidatorController {
      */
     @PostMapping("/requestBody/saveList2")
     public ResultData<List<UserDTO>> saveList2(@RequestBody ValidList<UserDTO> userDTOS) {
-        Set<ConstraintViolation<ValidList<UserDTO>>> constraintViolations = validator.validate(userDTOS, UserDTO.Save.class);
+        Set<ConstraintViolation<ValidList<UserDTO>>> constraintViolations = validator.validate(userDTOS, ValidGroup.Insert.class);
         if (constraintViolations.isEmpty()) {
             System.out.println("===校验通过");
         } else {
