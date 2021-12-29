@@ -6,6 +6,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.NotBlank;
+import java.util.List;
 
 
 /**
@@ -53,6 +54,19 @@ public class ValidatorController {
         // 校验通过，才会执行业务逻辑处理
         System.out.println("userDTO=" + userDTO);
         return new ResultData<>(userDTO);
+    }
+
+    /**
+     * http://localhost:8080/validator/requestBody/saveList
+     *
+     * @param userDTOS
+     * @return
+     */
+    @PostMapping("/requestBody/saveList")
+    public ResultData<List<UserDTO>> saveList(@RequestBody @Validated({UserDTO.Save.class}) ValidList<UserDTO> userDTOS) {
+        // 校验通过，才会执行业务逻辑处理
+        System.out.println(userDTOS);
+        return new ResultData<>(userDTOS);
     }
 
     /**
