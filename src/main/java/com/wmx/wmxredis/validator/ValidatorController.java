@@ -10,7 +10,9 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 
@@ -114,6 +116,24 @@ public class ValidatorController {
             System.out.println("===校验通过：");
         }
         return new ResultData<>(userDTO);
+    }
+
+    /**
+     * http://localhost:8080/validator/requestBody/save4
+     * 如果不需要对请求体 DTO 对象的属性进行校验，则直接使用 @NotEmpty 等注解也是可以的，
+     * 如校验集合或者 Map 不能为空，注意此时和RequestParam/PathVariable 参数校验一样，类上需要使用 @Validated 注解开启校验
+     *
+     * @param code
+     * @param dataList
+     * @return
+     */
+    @PostMapping("/requestBody/save4")
+    public ResultData<List<Map<String, Object>>> saveUse4(
+            @RequestParam @NotBlank String code,
+            @RequestBody @NotEmpty List<Map<String, Object>> dataList) {
+        // 校验通过，才会执行业务逻辑处理
+        System.out.println("code=" + code + ", dataList=" + dataList);
+        return new ResultData<>(dataList);
     }
 
     /**

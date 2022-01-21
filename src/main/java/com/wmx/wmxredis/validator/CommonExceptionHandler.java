@@ -54,6 +54,8 @@ public class CommonExceptionHandler {
 
     /**
      * 1、@Validated 对 RequestParam、PathVariable 传参校验未通过时，会抛出 ConstraintViolationException 异常。
+     * 2、请求体参数 @RequestBody 如果不是对 DTO 对象属性的校验，则未通过时同样走的 ConstraintViolationException 异常。
+     * 比如 @RequestBody @NotEmpty List<Map<String, Object>> dataList
      *
      * @param ex
      * @return
