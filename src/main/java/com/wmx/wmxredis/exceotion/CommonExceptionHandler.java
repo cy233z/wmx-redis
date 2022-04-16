@@ -1,4 +1,4 @@
-package com.wmx.wmxredis.validator;
+package com.wmx.wmxredis.exceotion;
 
 import com.wmx.wmxredis.resultAPI.ResultCode;
 import com.wmx.wmxredis.resultAPI.ResultData;
@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import javax.validation.ConstraintViolationException;
 
 /**
- * 系统全局异常处理
+ * 系统全局统一异常处理
  *
  * @author wangMaoXiong
  * @version 1.0
@@ -79,6 +79,5 @@ public class CommonExceptionHandler {
         log.error(ex.getMessage(), ex);
         return new ResultData<>(ResultCode.FAIL, null);
     }
-
 
 }

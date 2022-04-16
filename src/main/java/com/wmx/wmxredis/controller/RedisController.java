@@ -156,7 +156,7 @@ public class RedisController {
      * @throws InterruptedException
      */
     @GetMapping("redis/execute")
-    public Map<String, Object> execute(@RequestParam String key, @RequestParam String value) throws InterruptedException {
+    public Map<String, Object> execute(@RequestParam String key, @RequestParam String value) {
         Map<String, Object> returnMap = new HashMap<>(8);
         Boolean ifAbsent = false;
         try {
@@ -187,12 +187,14 @@ public class RedisController {
     }
 
     /**
-     * http://localhost:8080/redis/testString2
+     * http://localhost:8080/redis/testString2?code=111
      * <p>
      * void set(K key, V value)：字符串类型可以直接存储 List<Map> 对象，但是存储 String[] 数组对象，反序列化时会报错。
      */
     @GetMapping("redis/testString2")
-    public void testString2() {
+    public List<Map<String, Object>> testString2(String code) {
+        System.out.println(code.length());
+
         List<Map<String, Object>> dataList = Lists.newArrayList();
         for (int i = 0; i < 5; i++) {
             Map<String, Object> dataMap = new HashMap<>(8);
@@ -210,7 +212,7 @@ public class RedisController {
 
         redisTemplate.opsForValue().set("wmx2", dataList);
         List<Map<String, Object>> wmx1 = (List<Map<String, Object>>) redisTemplate.opsForValue().get("wmx2");
-        System.out.println(wmx1);
+        return wmx1;
     }
 }
 
