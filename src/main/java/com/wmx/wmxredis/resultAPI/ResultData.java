@@ -23,9 +23,11 @@ public class ResultData<T> implements Serializable {
      * pageNum：分页时，表示当前的页码
      * pageSize：分页时，表示每页显示的数据条数
      * pages：总页数
+     * exception：原始的异常信息，方便从页面排查问题.
      */
     private Integer code;
     private String message;
+    private String exception;
     private long total;
     private int pageNum;
     private int pageSize;
@@ -45,6 +47,13 @@ public class ResultData<T> implements Serializable {
         this.code = resultCode.getCode();
         this.message = resultCode.getMessage();
         this.data = data;
+    }
+
+    public ResultData(ResultCode resultCode, T data, String exception) {
+        this.code = resultCode.getCode();
+        this.message = resultCode.getMessage();
+        this.data = data;
+        this.exception = exception;
     }
 
     public ResultData(ResultCode resultCode, T data, long total, int pageNum, int pageSize) {
@@ -144,4 +153,13 @@ public class ResultData<T> implements Serializable {
     public void setPages(int pages) {
         this.pages = pages;
     }
+
+    public String getException() {
+        return exception;
+    }
+
+    public void setException(String exception) {
+        this.exception = exception;
+    }
+
 }
