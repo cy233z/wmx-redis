@@ -1,6 +1,5 @@
 package com.wmx.wmxredis.properties;
 
-import com.wmx.wmxredis.annotation.RedisLock;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -36,7 +35,6 @@ public class PropertiesController {
      * @return
      */
     @GetMapping("properties/getDefaultUser")
-    @RedisLock(retryCount = 3, lockTime = 30, lockFiled = -1, desc = "redis分布式锁")
     public UserProperties getDefaultUser() {
         return userProperties;
     }
