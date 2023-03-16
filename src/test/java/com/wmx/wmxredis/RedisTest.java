@@ -178,6 +178,7 @@ public class RedisTest {
      * Long remove(K key, Object... values)：移除 set 中的元素。返回 set 中剩余的元素个数。
      * * 1、set 中没有元素时，自动删除 key。
      * * 2、key 不存在时，不影响。
+     * * 3、values 必须有值，不能为null或者空，否则报错：JedisDataException: ERR wrong number of arguments for 'srem' command
      */
     @Test
     public void test4() {
