@@ -44,7 +44,7 @@ public class RedisController {
      * @return
      */
     @GetMapping("redis/save")
-    public String redisCache(Person person) {
+    public ResultData<Object> redisCache(Person person) {
         ValueOperations opsForValue = redisTemplate.opsForValue();
         ListOperations opsForList = redisTemplate.opsForList();
         HashOperations opsForHash = redisTemplate.opsForHash();
@@ -60,7 +60,7 @@ public class RedisController {
         redisTemplate.expire(RedisController.class.getName() + "_string" + person.getId(), 60, TimeUnit.SECONDS);
         redisTemplate.expire(RedisController.class.getName() + "_list" + person.getId(), 60, TimeUnit.SECONDS);
         redisTemplate.expire(RedisController.class.getName() + "_map", 60, TimeUnit.SECONDS);
-        return "缓存成功.";
+        return new ResultData("缓存成功");
     }
 
     /**

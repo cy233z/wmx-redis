@@ -11,7 +11,7 @@
 
 2、Redisson 分布式锁练习
 
-3、 @ConfigurationProperties、@EnableConfigurationProperties、@Bean、@Component 属性注入练习
+3、@ConfigurationProperties、@EnableConfigurationProperties、@Bean、@Component 属性注入练习
 
 4、后端返回数据对象封装练习，ResultData、ResultCode
 
