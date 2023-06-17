@@ -14,6 +14,7 @@ import org.springframework.data.redis.core.ListOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.data.redis.core.script.RedisScript;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 
@@ -39,6 +40,8 @@ public class RedisController {
 
     /**
      * 保存数据，设置缓存：http://localhost:8080/redis/save?id=1000&name=张三
+     * <p>
+     * 业务方法未加 Spring @Transactional 事务注解，方法发生异常时，RedisTemplate 的增、删、改等操作不会回滚。
      *
      * @param person
      * @return
@@ -61,6 +64,71 @@ public class RedisController {
         redisTemplate.expire(RedisController.class.getName() + "_list" + person.getId(), 60, TimeUnit.SECONDS);
         redisTemplate.expire(RedisController.class.getName() + "_map", 60, TimeUnit.SECONDS);
         return new ResultData("缓存成功");
+    }
+
+    /**
+     * http://localhost:8080/redis/setValue?key=1&value=张三
+     * <p>
+     * 业务方法无论有没有加 Spring @Transactional 事务注解，方法发生异常时，
+     * 默认情况下 RedisTemplate 的增、删、改等操作都不会回滚，RedisTemplate API 一执行，redis 数据库中就会立马生效。
+     *
+     * @param key
+     * @param value
+     * @return
+     */
+    @GetMapping("redis/setValue")
+    @Transactional(rollbackFor = Exception.class)
+    public ResultData<Object> setValue(@RequestParam String key,
+                                       @RequestParam String value) {
+        redisTemplate.opsForValue().set(key, value, 60, TimeUnit.SECONDS);
+        // 故意发生异常（上面的方法执行完成，redis 中就会看到数据，即使发生异常，redis 数据也不会回滚）
+        System.out.println(Integer.parseInt(key));
+        Long setValueCount = redisTemplate.opsForValue().increment("setValue_count", 1);
+        return new ResultData(setValueCount);
+    }
+
+    /**
+     * http://localhost:8080/redis/setValue?key=1&value=张三
+     * <p>
+     * RedisTemplate 使用 setEnableTransactionSupport 手动管理事务时，multi() 开启事务后，事务只能提交(exec) 或者丢弃(discard)。
+     *
+     * @param key
+     * @param value
+     * @return
+     */
+    @GetMapping("redis/setValue2")
+    @Transactional(rollbackFor = Exception.class)
+    public ResultData<Object> setValue2(@RequestParam String key,
+                                        @RequestParam String value) {
+        Long setValueCount = null;
+        try {
+            // 设置启用事务支持（默认是false）
+            redisTemplate.setEnableTransactionSupport(true);
+            // 开启事务
+            redisTemplate.multi();
+
+            // 设置缓存
+            redisTemplate.opsForValue().set(key, value, 60, TimeUnit.SECONDS);
+            // 自增，并返回自增后的结果，key 不存在时，自动新增为1.
+            // 因为此时事务还未提交，所以会返回 null.
+            setValueCount = redisTemplate.opsForValue().increment("setValue_count", 1);
+
+            // 故意发生异常（上面的方法执行完成，redis 中就会看到数据，即使发生异常，redis 数据也不会回滚）
+            System.out.println(Integer.parseInt(key));
+
+            // 提交/执行事务（只要未提交事务，则上面的命令都不会执行），一旦提交事务，则全部命令会立即执行，redis中的数据会立马更新
+            // 注意：如果事务已经丢弃(discard)，则不能再提交，否则异常：InvalidDataAccessApiUsageException: No ongoing transaction. Did you forget to call multi?
+            redisTemplate.exec();
+        } catch (Exception e) {
+            // 丢弃事务（所有命令都将丢弃，不会再生效）
+            // 如果事务已经提交，则不能在丢弃事务，否则报错：java.lang.IllegalStateException: Connection has no active transaction
+            redisTemplate.discard();
+            throw e;
+        } finally {
+            // 关闭事务支持
+            // redisTemplate.setEnableTransactionSupport(false);
+        }
+        return new ResultData(setValueCount);
     }
 
     /**
