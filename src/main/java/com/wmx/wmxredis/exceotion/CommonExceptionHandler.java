@@ -1,5 +1,6 @@
 package com.wmx.wmxredis.exceotion;
 
+import cn.hutool.core.exceptions.ExceptionUtil;
 import com.wmx.wmxredis.resultAPI.ResultCode;
 import com.wmx.wmxredis.resultAPI.ResultData;
 import org.slf4j.Logger;
@@ -77,7 +78,9 @@ public class CommonExceptionHandler {
     @ResponseStatus(HttpStatus.OK)
     public ResultData<Object> handleException(Exception ex) {
         log.error(ex.getMessage(), ex);
-        return new ResultData<>(ResultCode.FAIL, null);
+        // 堆栈转为完整字符串(默认3k个字符长度)
+        String stacktraceToString = ExceptionUtil.stacktraceToString(ex);
+        return new ResultData<>(ResultCode.FAIL, null, stacktraceToString);
     }
 
 }

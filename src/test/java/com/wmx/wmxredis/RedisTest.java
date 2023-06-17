@@ -173,15 +173,22 @@ public class RedisTest {
         System.out.println(increment_age1 + ", " + increment_age2);//53, 73.45
     }
 
-    //org.springframework.data.redis.core.SetOperations 处理 Set 类型数据：
+    /**
+     * org.springframework.data.redis.core.SetOperations 处理 Set 类型数据：
+     * Long remove(K key, Object... values)：移除 set 中的元素。返回 set 中剩余的元素个数。
+     * * 1、set 中没有元素时，自动删除 key。
+     * * 2、key 不存在时，不影响。
+     * * 3、values 必须有值，不能为null或者空，否则报错：JedisDataException: ERR wrong number of arguments for 'srem' command
+     */
     @Test
     public void test4() {
         stringRedisTemplate.getConnectionFactory().getConnection().flushDb();//清空当前连接的 redis 数据库中所有缓存的数据。
         SetOperations<String, String> opsForSet = stringRedisTemplate.opsForSet();
         Long add = opsForSet.add("set_1", "C", "Java", "Python");//往集合添加元素
         Long remove = opsForSet.remove("set_1", "C");//删除元素
+        Long remove2 = opsForSet.remove("set_2", "C");//删除元素
         String set_1 = opsForSet.pop("set_1");//随机弹出 set 中的一个元素
-        System.out.println(add + ", " + remove + ", " + set_1);//3, 1, Python
+        System.out.println(add + ", " + remove + ", " + remove2 + ", " + set_1);//3, 1, 0, Java
 
         opsForSet.add("set_2", "华山", "泰山", "衡山");
         Set<String> set_2 = opsForSet.members("set_2");//查询 set 中的所有元素

@@ -6,13 +6,13 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
 /**
- * @author wangMaoXiong
- * <p>
  * 标准 Servlet 过滤器，实现 javax.servlet.Filter 接口，并重现它的 3 个方法
  * filterName：表示过滤器名称，可以不写
  * value：配置请求过滤的规则，如 "/*" 表示过滤所有请求，包括静态资源，如 "/user/*" 表示 /user 开头的所有请求
+ *
+ * @author wangMaoXiong
  */
-//@WebFilter(filterName = "SystemFilter", value = {"/*"})
+@WebFilter(filterName = "SystemFilter", value = {"/*"})
 public class SystemFilter implements Filter {
 
     @Override
