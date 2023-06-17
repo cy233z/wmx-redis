@@ -59,7 +59,16 @@ public class RedisConfig {
     /**
      * 自定义 RedisTemplate 序列化方式 - 支持 Redis 事务
      * 在需要使用 redis 事务的地方直接注入名称为 redisTemplateTransactional 的 RedisTemplate 实例即可使用：multi(开启事务) 、exec（执行事务） 、discard（丢弃事务
-     * 而不再需要手动 redisTemplate.setEnableTransactionSupport(true) 操作，
+     * 而不再需要手动 redisTemplate.setEnableTransactionSupport(true) 操作。
+     * <pre>
+     *     @Resource
+     *     @Qualifier("redisTemplateTransactional")
+     *     private RedisTemplate redisTemplateTransactional;
+     *
+     *     redisTemplate.multi();
+     *     ......
+     *     redisTemplate.exec();
+     * </pre>
      *
      * @param redisConnectionFactory
      * @return
